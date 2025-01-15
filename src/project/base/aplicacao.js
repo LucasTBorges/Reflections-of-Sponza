@@ -32,11 +32,11 @@ export default class Aplicacao {
     init(){
         this.loadingService.show();
         const app = this;
-        this.getModels().subscribe((models) => {
+        this.loadAssets().subscribe((assets) => {
             const start = new Date();
-            console.log("models",models);
+            /* console.log("models",assets); */
             //Modelo base:
-            const main = models[0];
+            const main = assets[0];
             this.sponza = main.scene;
             const lights = main.parser.json.extensions?.KHR_lights_punctual?.lights || [];
             this.lights = [];
@@ -48,15 +48,17 @@ export default class Aplicacao {
             });
 
             //Estátua:
-            const statue = models[1];
+            const statue = assets[1];
             this.statue = statue.scene.children[0];
 
             //Cortinas:
-            const curtains = models[2];
+            const curtains = assets[2];
             curtains.scene.children.forEach((child) => {
                 this.sponza.add(child);
             });
 
+            //Envmap:
+            this.envmap = assets[3];
 
             this.makeScene();
             this.onInit.emit();
@@ -75,63 +77,21 @@ export default class Aplicacao {
         this.camera.position.set(10.88,1.31,-0.08);
         this.setCamDirection(-0.97,0.26, 0.01)
         this.scene = new THREE.Scene();
-        const hdrLoader = new RGBELoader();
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.shadowMap.enabled = true;
-        hdrLoader.loadAsync("/Assets/Models/glTF/Sponza-Intel/main1_sponza/textures/kloppenheim_05_4k.hdr")
-        .then((texture) => {
-        texture.mapping = THREE.EquirectangularReflectionMapping;
-        const skybox = new GroundedSkybox(texture,50,40);
-        skybox.position.y = 25;
-        this.scene.add(skybox);
-        });
         this.scene.add(this.sponza);
-        this.lights.forEach((light) => {
-            this.applyToGroup(light, (obj) => {
-            if(obj.isLight){
-                switch(obj.name){
-                    case 'SUN':
-                        obj.position.set(6.94,58.29,4.84);
-                        obj.lookAt(obj.position.clone().add(new THREE.Vector3(-0.15,-0.99,-0.09)));
-                        obj.castShadow = true;
-                        obj.intensity = 5;
-                        obj.shadow.mapSize.width = 1024;
-                        obj.shadow.mapSize.height = 1024;
-                        break;
-                    default:
-                        obj.intensity = 5;
-                        obj.castShadow = false;
-                        break;
-                }
-                this.scene.add(obj);
-                obj.escaneadoLight = true;
-            }
-            });
-        });
-        this.scene.children.forEach((child) => {
-            this.applyToGroup(child, (obj) => {
-                if(!obj.isLight){
-                    obj.castShadow = true;
-                    obj.receiveShadow = true;
-                }
-                obj.escaneadoMain = true;
-            });
-        });
-        this.flyControls = new FlyControls( this.camera, this.renderer.domElement );
-        this.flyControls.movementSpeed = 10.0;
-        this.flyControls.rollSpeed = Math.PI / 6.0;
-        this.flyControls.autoForward = false;
-        this.flyControls.dragToLook = true;
-        this.guiManager.addAlwaysOnItems(this.gui.add(this.flyControls, 'enabled').name("Free Cam"));
+        this.scene.add(this.envmap);
+        this.makeFlyControls();
         this.configEstatua();
         this.scene.add(this.statue);
         this.gui.show();
         this.onResize();
+        this.configLighting();
         this.renderer.setAnimationLoop(this.animate.bind(this));
         this.canvas.getElement().appendChild(this.renderer.domElement);
         window.addEventListener( 'resize', this.onResize.bind(this));
-        console.log(this.scene);
+        console.log(this.scene); //Remover posteriormente
     }
 
     onResize() {
@@ -159,7 +119,7 @@ export default class Aplicacao {
         this.flyControls.update(delta);
     }
 
-    getModels(){
+    loadAssets(){
         const gltfLoader = new GLTFLoader();
         const start = new Date();
 
@@ -204,7 +164,24 @@ export default class Aplicacao {
                 curtains.fail(error);
             }
         );
-        return Observable.and(main,statue,curtains);
+
+        //Envmap
+        const envmap = new Observable();
+        const hdrLoader = new RGBELoader();
+        hdrLoader.loadAsync("/Assets/Models/glTF/Sponza-Intel/main1_sponza/textures/kloppenheim_05_4k.hdr")
+        .then((texture) => {
+                texture.mapping = THREE.EquirectangularReflectionMapping;
+                const skybox = new GroundedSkybox(texture,50,40);
+                skybox.position.y = 25;
+                console.log("Envmap carregado em "+(new Date().getTime()-start.getTime())/1000+" segundos");
+                envmap.emit(skybox);
+            },
+            (error) => {
+                envmap.fail(error)
+            }
+        );
+
+        return Observable.and(main,statue,curtains,envmap);
     }
 
     setCamDirection(x,y,z){
@@ -223,6 +200,81 @@ export default class Aplicacao {
                 this.applyToGroup(child,func);
             });
         }
+    }
+
+    configLighting(){
+        this.lightObjs = [];
+        this.controls["lightsIntensity"] = 5;
+        this.controls["lightsVisible"] = true;
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+        this.scene.add(ambientLight);
+        this.lights.forEach((light) => {
+            this.applyToGroup(light, (obj) => {
+            if(obj.isLight){
+                switch(obj.name){
+                    case 'SUN':
+                        obj.position.set(22.44,30,30.6);
+                        obj.lookAt(obj.position.clone().add(new THREE.Vector3(-0.15,-0.99,-0.09)));
+                        obj.castShadow = true;
+                        obj.intensity = 5;
+                        obj.shadow.mapSize.width = 2048;
+                        obj.shadow.mapSize.height = 2048;
+                        obj.shadow.camera.far = 60;
+                        this.sun = obj;
+                        this.sun.shadow.camera.right = 50;
+                        this.sun.shadow.camera.left = -50;
+                        this.sun.shadow.camera.top = 50;
+                        this.sun.shadow.camera.updateProjectionMatrix();
+                        break;
+                    default:
+                        obj.intensity = this.controls["lightsIntensity"];
+                        obj.castShadow = false;
+                        this.controls["lightsColor"] = obj.color.getHex();
+                        this.lightObjs.push(obj);
+                        break;
+                }
+                this.scene.add(obj);
+                obj.escaneadoLight = true;
+            }
+            });
+        });
+        this.scene.traverse((obj) => {
+            if(obj.isMesh){
+                obj.castShadow = true;
+                obj.receiveShadow = true;
+            }
+        });
+        
+        //Configuração da GUI
+        const lightControls = this.gui.addFolder("Iluminação");
+
+        //Sun controls
+        const sunControls = lightControls.addFolder("Sol");
+        sunControls.add(this.sun,'visible').name("Ligado");
+        sunControls.add(this.sun,'intensity',0,10).name("Intensidade");
+        //Lantern controls
+        const lanterns = lightControls.addFolder("Luminárias");
+        lanterns.add(this.controls,'lightsVisible').name("Ligadas").onChange((value) => {
+            this.lightObjs.forEach((light) => {
+                light.visible = value;
+            }
+        )});
+        lanterns.addColor(this.controls,'lightsColor').name("Cor").onChange((value) => {
+            this.lightObjs.forEach((light) => {
+                light.color.set(value);
+            }
+        )});
+        lanterns.add(this.controls,'lightsIntensity',0,10).name("Intensidade").onChange((value) => {
+            this.lightObjs.forEach((light) => {
+                light.intensity = value;
+            }
+        )});
+        //Ambient light controls
+        const ambientLightControls = lightControls.addFolder("Luz Ambiente");
+        ambientLightControls.add(ambientLight,'visible').name("Ligada");
+        ambientLightControls.addColor(ambientLight,'color').name("Cor");
+        ambientLightControls.add(ambientLight,'intensity',0,1).name("Intensidade");
+        this.guiManager.addAlwaysOnItems(lightControls);
     }
 
     configEstatua(){
@@ -248,5 +300,14 @@ export default class Aplicacao {
             }
         });
         this.guiManager.addAlwaysOnItems(statueControls)
+    }
+
+    makeFlyControls(){
+        this.flyControls = new FlyControls( this.camera, this.renderer.domElement );
+        this.flyControls.movementSpeed = 10.0;
+        this.flyControls.rollSpeed = Math.PI / 6.0;
+        this.flyControls.autoForward = false;
+        this.flyControls.dragToLook = true;
+        this.guiManager.addAlwaysOnItems(this.gui.add(this.flyControls, 'enabled').name("Free Cam"));
     }
 }
