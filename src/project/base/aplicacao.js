@@ -60,6 +60,9 @@ export default class Aplicacao {
             //Envmap:
             this.envmap = assets[3];
 
+            //Water Normals:
+            this.waterNormals = assets[4];
+
             this.makeScene();
             this.onInit.emit();
             this.loadingService.hide();
@@ -182,7 +185,24 @@ export default class Aplicacao {
             }
         );
 
-        return Observable.and(main,statue,curtains,envmap);
+        //Water Normals
+        const waterNormals = new Observable();
+        const loader = new THREE.TextureLoader();
+        loader.load("/src/assets/waternormals.jpg",
+            (texture) => {
+                console.log("Water Normals carregado em "+(new Date().getTime()-start.getTime())/1000+" segundos");
+                texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                texture.repeat.set(4,4);
+                waterNormals.emit(texture);
+            },
+            (xhr) => {
+            },
+            (error) => {
+                waterNormals.fail(error);
+            }
+        );
+
+        return Observable.and(main,statue,curtains,envmap,waterNormals);
     }
 
     setCamDirection(x,y,z){
@@ -226,6 +246,8 @@ export default class Aplicacao {
                         this.sun.shadow.camera.left = -50;
                         this.sun.shadow.camera.top = 50;
                         this.sun.shadow.camera.updateProjectionMatrix();
+                        this.water.material.uniforms.sunColor.value.set(obj.color.getHex());
+                        this.water.material.uniforms.sunDirection.value = obj.position.clone().normalize();
                         break;
                     default:
                         obj.intensity = this.controls["lightsIntensity"];
@@ -252,7 +274,9 @@ export default class Aplicacao {
         //Sun controls
         const sunControls = lightControls.addFolder("Sol");
         sunControls.add(this.sun,'visible').name("Ligado");
-        sunControls.addColor(this.sun,'color').name("Cor");
+        sunControls.addColor(this.sun,'color').name("Cor").onChange((value) => {
+            this.water.sunColor.set(value);
+        });
         sunControls.add(this.sun,'intensity',0,10).name("Intensidade");
         //Lantern controls
         const lanterns = lightControls.addFolder("Luminárias");
@@ -315,27 +339,33 @@ export default class Aplicacao {
 
     makeWater(){
         const geometry = new THREE.PlaneGeometry( 50, 50 );
-        const water = new Water(
+        this.water = new Water(
             geometry,
             {
                 textureWidth: 512,
                 textureHeight: 512,
-                waterNormals: new THREE.TextureLoader().load( '/src/assets/waternormals.jpg', function ( texture ) {
-                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-                } ),
-                sunDirection: new THREE.Vector3(),
+                waterNormals: this.waterNormals,
+                sunDirection: new THREE.Vector3(0.70707, 0.70707, 0),
                 sunColor: 0xffffff,
                 waterColor: 0x001e0f,
                 distortionScale: 3.7,
                 fog: this.scene.fog !== undefined
             }
         );
-        water.rotation.x = -Math.PI/2;
-        water.position.set(0.3,0.035,0.3)
-        water.scale.set(0.84,0.45,0.84);
-        this.scene.add(water);
+        this.water.rotation.x = -Math.PI/2;
+        this.water.position.set(0.3,0.035,0.3)
+        this.water.scale.set(0.84,0.45,0.84);
+        this.scene.add(this.water);
         const waterFolder = this.gui.addFolder("Água");
-        waterFolder.add(water,'visible').name("Ligada");
+        waterFolder.add(this.water,'visible').name("Ligada");
+        waterFolder.add(this.water.position,'y',0.035,1).name("Altura");
+        waterFolder.add(this.water.material.uniforms.size,'value',0.1,10).name("Escala");
+        waterFolder.add(this.water.material.uniforms.distortionScale,'value',0,10).name("Ondulação");
+        waterFolder.addColor(this.water.material.uniforms.waterColor,'value').name("Cor da Água");
+        const sunDirection = waterFolder.addFolder("Direção do Sol");
+        sunDirection.add(this.water.material.uniforms.sunDirection.value,'x',-1,1).name("X");
+        sunDirection.add(this.water.material.uniforms.sunDirection.value,'y',-1,1).name("Y");
+        sunDirection.add(this.water.material.uniforms.sunDirection.value,'z',-1,1).name("Z");
         this.guiManager.addAlwaysOnItems(waterFolder);
     }
 }
