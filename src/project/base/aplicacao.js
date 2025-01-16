@@ -125,13 +125,13 @@ export default class Aplicacao {
 
     loadAssets(){
         const gltfLoader = new GLTFLoader();
-        const start = new Date();
 
         //Modelo base
         const main = new Observable();
+        const startMain = new Date();
         gltfLoader.load("/Assets/Models/glTF/Sponza-Intel/main1_sponza/NewSponza_Main_glTF_003.gltf",
             (gltf) => {
-                console.log("Modelo base carregado em "+(new Date().getTime()-start.getTime())/1000+" segundos");
+                console.log("Modelo base carregado em "+(new Date().getTime()-startMain.getTime())/1000+" segundos");
                 main.emit(gltf);
             },
             (xhr) => {
@@ -143,9 +143,10 @@ export default class Aplicacao {
 
         //Modelo da estátua
         const statue = new Observable();
+        const startStatue = new Date();
         gltfLoader.load("/src/assets/estatua/scene.gltf",
             (gltf) => {
-                console.log("Modelo da estátua carregado em "+(new Date().getTime()-start.getTime())/1000+" segundos");
+                console.log("Modelo da estátua carregado em "+(new Date().getTime()-startStatue.getTime())/1000+" segundos");
                 statue.emit(gltf);
             },
             (xhr) => {
@@ -157,9 +158,10 @@ export default class Aplicacao {
 
         //Modelo das cortinas
         const curtains = new Observable();
+        const startCurtains = new Date();
         gltfLoader.load("/Assets/Models/glTF/Sponza-Intel/pkg_a_curtains/NewSponza_Curtains_glTF.gltf",
             (gltf) => {
-                console.log("Modelo das cortinas carregado em "+(new Date().getTime()-start.getTime())/1000+" segundos");
+                console.log("Modelo das cortinas carregado em "+(new Date().getTime()-startCurtains.getTime())/1000+" segundos");
                 curtains.emit(gltf);
             },
             (xhr) => {
@@ -171,13 +173,14 @@ export default class Aplicacao {
 
         //Envmap
         const envmap = new Observable();
+        const startEnvmap = new Date();
         const hdrLoader = new RGBELoader();
         hdrLoader.loadAsync("/Assets/Models/glTF/Sponza-Intel/main1_sponza/textures/kloppenheim_05_4k.hdr")
         .then((texture) => {
                 texture.mapping = THREE.EquirectangularReflectionMapping;
                 const skybox = new GroundedSkybox(texture,50,40);
                 skybox.position.y = 25;
-                console.log("Envmap carregado em "+(new Date().getTime()-start.getTime())/1000+" segundos");
+                console.log("Envmap carregado em "+(new Date().getTime()-startEnvmap.getTime())/1000+" segundos");
                 envmap.emit(skybox);
             },
             (error) => {
@@ -187,10 +190,11 @@ export default class Aplicacao {
 
         //Water Normals
         const waterNormals = new Observable();
+        const startWater = new Date();
         const loader = new THREE.TextureLoader();
         loader.load("/src/assets/waternormals.jpg",
             (texture) => {
-                console.log("Water Normals carregado em "+(new Date().getTime()-start.getTime())/1000+" segundos");
+                console.log("Water Normals carregado em "+(new Date().getTime()-startWater.getTime())/1000+" segundos");
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                 texture.repeat.set(4,4);
                 waterNormals.emit(texture);
@@ -348,7 +352,9 @@ export default class Aplicacao {
                 sunDirection: new THREE.Vector3(0.70707, 0.70707, 0),
                 sunColor: 0xffffff,
                 waterColor: 0x001e0f,
-                distortionScale: 3.7,
+                distortionScale: 0.85,
+                size: 10.0,
+                flowDirection: new THREE.Vector2(0.5, 0.5),
                 fog: this.scene.fog !== undefined
             }
         );
@@ -361,11 +367,12 @@ export default class Aplicacao {
         waterFolder.add(this.water.position,'y',0.035,1).name("Altura");
         waterFolder.add(this.water.material.uniforms.size,'value',0.1,10).name("Escala");
         waterFolder.add(this.water.material.uniforms.distortionScale,'value',0,10).name("Ondulação");
-        waterFolder.addColor(this.water.material.uniforms.waterColor,'value').name("Cor da Água");
-        const sunDirection = waterFolder.addFolder("Direção do Sol");
-        sunDirection.add(this.water.material.uniforms.sunDirection.value,'x',-1,1).name("X");
-        sunDirection.add(this.water.material.uniforms.sunDirection.value,'y',-1,1).name("Y");
-        sunDirection.add(this.water.material.uniforms.sunDirection.value,'z',-1,1).name("Z");
+        waterFolder.addColor(this.water.material.uniforms.waterColor,'value').name("Cor");
+        this.controls["Water Flow"] = 0.25;
+        waterFolder.add(this.controls,'Water Flow',0,1).name("Velocidade de Fluxo");
+        this.onRender.subscribe((delta) => {
+            this.water.material.uniforms.time.value += delta*this.controls["Water Flow"];
+        });
         this.guiManager.addAlwaysOnItems(waterFolder);
     }
 }
