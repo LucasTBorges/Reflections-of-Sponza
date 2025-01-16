@@ -1,5 +1,5 @@
 
-import { THREE, FlyControls, GLTFLoader, RGBELoader, GroundedSkybox } from '../util/imports.js';
+import { THREE, FlyControls, GLTFLoader, RGBELoader, GroundedSkybox, Water } from '../util/imports.js';
 import GuiManager from './guiManager.js';
 import Interface from './interface.js';
 import ThreeJsCanvas from '../components/threejsCanvas/threejsCanvas.js';
@@ -84,6 +84,7 @@ export default class Aplicacao {
         this.scene.add(this.envmap);
         this.makeFlyControls();
         this.configEstatua();
+        this.makeWater();
         this.scene.add(this.statue);
         this.gui.show();
         this.onResize();
@@ -251,6 +252,7 @@ export default class Aplicacao {
         //Sun controls
         const sunControls = lightControls.addFolder("Sol");
         sunControls.add(this.sun,'visible').name("Ligado");
+        sunControls.addColor(this.sun,'color').name("Cor");
         sunControls.add(this.sun,'intensity',0,10).name("Intensidade");
         //Lantern controls
         const lanterns = lightControls.addFolder("Luminárias");
@@ -273,7 +275,7 @@ export default class Aplicacao {
         const ambientLightControls = lightControls.addFolder("Luz Ambiente");
         ambientLightControls.add(ambientLight,'visible').name("Ligada");
         ambientLightControls.addColor(ambientLight,'color').name("Cor");
-        ambientLightControls.add(ambientLight,'intensity',0,1).name("Intensidade");
+        ambientLightControls.add(ambientLight,'intensity',0,0.5).name("Intensidade");
         this.guiManager.addAlwaysOnItems(lightControls);
     }
 
@@ -309,5 +311,31 @@ export default class Aplicacao {
         this.flyControls.autoForward = false;
         this.flyControls.dragToLook = true;
         this.guiManager.addAlwaysOnItems(this.gui.add(this.flyControls, 'enabled').name("Free Cam"));
+    }
+
+    makeWater(){
+        const geometry = new THREE.PlaneGeometry( 50, 50 );
+        const water = new Water(
+            geometry,
+            {
+                textureWidth: 512,
+                textureHeight: 512,
+                waterNormals: new THREE.TextureLoader().load( '/src/assets/waternormals.jpg', function ( texture ) {
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                } ),
+                sunDirection: new THREE.Vector3(),
+                sunColor: 0xffffff,
+                waterColor: 0x001e0f,
+                distortionScale: 3.7,
+                fog: this.scene.fog !== undefined
+            }
+        );
+        water.rotation.x = -Math.PI/2;
+        water.position.set(0.3,0.035,0.3)
+        water.scale.set(0.84,0.45,0.84);
+        this.scene.add(water);
+        const waterFolder = this.gui.addFolder("Água");
+        waterFolder.add(water,'visible').name("Ligada");
+        this.guiManager.addAlwaysOnItems(waterFolder);
     }
 }
