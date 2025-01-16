@@ -6,4 +6,5 @@ import { GLTFLoader } from "/Assets/scripts/three.js/examples/jsm/loaders/GLTFLo
 import { RGBELoader } from "/Assets/scripts/three.js/examples/jsm/loaders/RGBELoader.js";
 import { GroundedSkybox } from "/Assets/scripts/three.js/examples/jsm/objects/GroundedSkybox.js";
 import { Water } from "/Assets/scripts/three.js/examples/jsm/objects/Water.js";
-export { THREE, GUI, GLTFLoader, FlyControls, RGBELoader, GroundedSkybox, Water};
+import { Reflector } from "/Assets/scripts/three.js/examples/jsm/objects/Reflector.js";
+export { THREE, GUI, GLTFLoader, FlyControls, RGBELoader, GroundedSkybox, Water, Reflector};

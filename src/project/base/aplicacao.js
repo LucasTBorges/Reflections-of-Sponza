@@ -1,5 +1,5 @@
 
-import { THREE, FlyControls, GLTFLoader, RGBELoader, GroundedSkybox, Water } from '../util/imports.js';
+import { THREE, FlyControls, GLTFLoader, RGBELoader, GroundedSkybox, Water, Reflector } from '../util/imports.js';
 import GuiManager from './guiManager.js';
 import Interface from './interface.js';
 import ThreeJsCanvas from '../components/threejsCanvas/threejsCanvas.js';
@@ -49,8 +49,9 @@ export default class Aplicacao {
 
             //Estátua:
             const statue = assets[1];
-            this.statue = statue.scene.children[0];
-
+            this.statue = new THREE.Group();
+            this.statue.add(statue.scene.children[0]);
+    
             //Cortinas:
             const curtains = assets[2];
             curtains.scene.children.forEach((child) => {
@@ -87,6 +88,7 @@ export default class Aplicacao {
         this.scene.add(this.envmap);
         this.makeFlyControls();
         this.configEstatua();
+        this.configMirrors();
         this.makeWater();
         this.scene.add(this.statue);
         this.gui.show();
@@ -309,27 +311,35 @@ export default class Aplicacao {
 
     configEstatua(){
         this.controls["statueScale"] = 0.42;
-        this.controls["Auto Rotate"] = false
+        this.controls["Auto Rotate"] = true
         this.controls["Rotate Speed"] = 1
         this.statue.castShadow = true;
         this.statue.receiveShadow = true;
         this.statue.position.set(-6.04,0,0);
-        this.statue.rotation.set(-Math.PI/2,0,Math.PI/2);
+        this.statue.rotation.set(0,Math.PI/2,0);
         const baseScale = 0.42;
         this.statue.scale.set(baseScale,baseScale,baseScale);
-        const statueControls = this.gui.addFolder("Estátua");
-        statueControls.add(this.statue.position,'x',-10,10).name("Posição");
-        statueControls.add(this.controls,'statueScale',0.15,0.6).name("Escala").onChange((value) => {
+        this.statueControls = this.gui.addFolder("Estátua");
+        this.statueControls.add(this.statue,'visible').name("Visível");
+        this.mirrors = [];
+        this.controls["mirrorVisible"] = true;
+        this.statueControls.add(this.controls,'mirrorVisible').name("Espelhos").onChange((value) => {   
+            this.mirrors.forEach((mirror) => {
+                mirror.visible = value;
+            });
+        });
+        this.statueControls.add(this.statue.position,'x',-10,10).name("Posição");
+        this.statueControls.add(this.controls,'statueScale',0.15,0.6).name("Escala").onChange((value) => {
             this.statue.scale.set(value,value,value);
         });
-        statueControls.add(this.controls,'Auto Rotate').name("Auto Rotacionar");
-        statueControls.add(this.controls,'Rotate Speed',0.1,5).name("Velocidade de Rotação");
+        this.statueControls.add(this.controls,'Auto Rotate').name("Auto Rotacionar");
+        this.statueControls.add(this.controls,'Rotate Speed',0.1,5).name("Velocidade de Rotação");
         this.onRender.subscribe((delta) => {
             if(this.controls["Auto Rotate"]){
-                this.statue.rotation.z += this.controls["Rotate Speed"]*delta;
+                this.statue.children[0].rotation.z += this.controls["Rotate Speed"]*delta;
             }
         });
-        this.guiManager.addAlwaysOnItems(statueControls)
+        this.guiManager.addAlwaysOnItems(this.statueControls)
     }
 
     makeFlyControls(){
@@ -374,5 +384,31 @@ export default class Aplicacao {
             this.water.material.uniforms.time.value += delta*this.controls["Water Flow"];
         });
         this.guiManager.addAlwaysOnItems(waterFolder);
+    }
+
+    configMirrors(){
+        const basicGeometry = new THREE.PlaneGeometry(6.5, 12);
+        this.mirrors[0] = 
+        new Reflector(
+            basicGeometry,{
+            textureWidth: (window.innerWidth * window.devicePixelRatio)/1.5,
+            textureHeight: (window.innerHeight * window.devicePixelRatio)/1.5,
+            clipBias: 0.003,
+            shader: Reflector.ReflectorShader
+            });
+        this.mirrors[1] =
+        new Reflector(
+            basicGeometry,{
+            textureWidth: (window.innerWidth * window.devicePixelRatio)/1.5,
+            textureHeight: (window.innerHeight * window.devicePixelRatio)/1.5,
+            clipBias: 0.003,
+            shader: Reflector.ReflectorShader
+            });
+        this.mirrors[0].position.set(2.2975,5.5,-2.7);
+        this.mirrors[0].rotation.set(0,-Math.PI/4,0)
+        this.mirrors[1].position.set(-2.2975,5.5,-2.7);
+        this.mirrors[1].rotation.set(0,Math.PI/4,0)
+        this.statue.add(this.mirrors[0]);
+        this.statue.add(this.mirrors[1]);
     }
 }
