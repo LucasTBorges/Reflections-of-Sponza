@@ -25,7 +25,7 @@ export default class Aplicacao {
         this.canvas = this.ui.addComponent("canvas", new ThreeJsCanvas(this,title)).hide();
         this.clock = new THREE.Clock();
         this.time = 0;
-        this.info = this.ui.addComponent("info",new InfoComponent(this)).show();
+        this.info = this.ui.addComponent("info",new InfoComponent(this)).hide();
         this.guiManager.addAlwaysOnItems(this.gui.add(this.info,'visible').name("Camera Info"));
     }
 
@@ -78,8 +78,7 @@ export default class Aplicacao {
     makeScene() {
         this.canvas.show();
         this.camera = new THREE.PerspectiveCamera( 75, 1, 0.01, 80 );
-        this.camera.position.set(10.88,1.31,-0.08);
-        this.setCamDirection(-0.97,0.26, 0.01)
+        this.configPOVs();
         this.scene = new THREE.Scene();
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -87,6 +86,12 @@ export default class Aplicacao {
         this.scene.add(this.sponza);
         this.scene.add(this.envmap);
         this.makeFlyControls();
+        this.onSelectCamera(this.controls["SelectedCam"]);
+        this.guiManager.addAlwaysOnItems(
+            this.gui.add(this.controls,'SelectedCam',this.controls["POVs"]).name("POVs").onChange((camera) => {
+                this.onSelectCamera(camera);
+            })
+        );
         this.configEstatua();
         this.configMirrors();
         this.makeWater();
@@ -111,7 +116,7 @@ export default class Aplicacao {
     }
 
     getDimensions() {
-        const ratio = window.innerWidth / window.innerHeight;
+        const ratio = window.innerWidth / window.innerHeight; //Para alterar a proporção da aplicação, modificar esse valor
         const width = ratio > 1 ? window.innerWidth : window.innerHeight * ratio;
         const height = ratio > 1 ? window.innerWidth / ratio : window.innerHeight;
         return {x: width, y: height, ratio:ratio};
@@ -275,17 +280,17 @@ export default class Aplicacao {
         });
         
         //Configuração da GUI
-        const lightControls = this.gui.addFolder("Iluminação");
+        const lightControls = this.gui.addFolder("Iluminação").close();
 
         //Sun controls
-        const sunControls = lightControls.addFolder("Sol");
+        const sunControls = lightControls.addFolder("Sol").close();
         sunControls.add(this.sun,'visible').name("Ligado");
         sunControls.addColor(this.sun,'color').name("Cor").onChange((value) => {
-            this.water.sunColor.set(value);
+            this.water.material.uniforms.sunColor.value.set(value);
         });
         sunControls.add(this.sun,'intensity',0,10).name("Intensidade");
         //Lantern controls
-        const lanterns = lightControls.addFolder("Luminárias");
+        const lanterns = lightControls.addFolder("Luminárias").close();
         lanterns.add(this.controls,'lightsVisible').name("Ligadas").onChange((value) => {
             this.lightObjs.forEach((light) => {
                 light.visible = value;
@@ -302,7 +307,7 @@ export default class Aplicacao {
             }
         )});
         //Ambient light controls
-        const ambientLightControls = lightControls.addFolder("Luz Ambiente");
+        const ambientLightControls = lightControls.addFolder("Luz Ambiente").close();
         ambientLightControls.add(ambientLight,'visible').name("Ligada");
         ambientLightControls.addColor(ambientLight,'color').name("Cor");
         ambientLightControls.add(ambientLight,'intensity',0,0.5).name("Intensidade");
@@ -319,7 +324,7 @@ export default class Aplicacao {
         this.statue.rotation.set(0,Math.PI/2,0);
         const baseScale = 0.42;
         this.statue.scale.set(baseScale,baseScale,baseScale);
-        this.statueControls = this.gui.addFolder("Estátua");
+        this.statueControls = this.gui.addFolder("Estátua").close();
         this.statueControls.add(this.statue,'visible').name("Visível");
         this.mirrors = [];
         this.controls["mirrorVisible"] = true;
@@ -328,9 +333,16 @@ export default class Aplicacao {
                 mirror.visible = value;
             });
         });
-        this.statueControls.add(this.statue.position,'x',-10,10).name("Posição");
+        this.statueControls.add(this.statue.position,'x',-10,10).name("Posição").onChange((value) => {
+            if(this.controls["SelectedCam"] === this.controls["POVs"]["Câmera de Segurança"]){
+                this.lookAtStatue();
+            }
+        });
         this.statueControls.add(this.controls,'statueScale',0.15,0.6).name("Escala").onChange((value) => {
             this.statue.scale.set(value,value,value);
+            if(this.controls["SelectedCam"] === this.controls["POVs"]["Câmera de Segurança"]){
+                this.lookAtStatue();
+            }
         });
         this.statueControls.add(this.controls,'Auto Rotate').name("Auto Rotacionar");
         this.statueControls.add(this.controls,'Rotate Speed',0.1,5).name("Velocidade de Rotação");
@@ -348,7 +360,8 @@ export default class Aplicacao {
         this.flyControls.rollSpeed = Math.PI / 6.0;
         this.flyControls.autoForward = false;
         this.flyControls.dragToLook = true;
-        this.guiManager.addAlwaysOnItems(this.gui.add(this.flyControls, 'enabled').name("Free Cam"));
+        this.flyControlsGui = this.gui.add(this.flyControls, 'enabled').name("Free Cam");
+        this.guiManager.addAlwaysOnItems(this.flyControlsGui);
     }
 
     makeWater(){
@@ -372,7 +385,7 @@ export default class Aplicacao {
         this.water.position.set(0.3,0.035,0.3)
         this.water.scale.set(0.84,0.45,0.84);
         this.scene.add(this.water);
-        const waterFolder = this.gui.addFolder("Água");
+        const waterFolder = this.gui.addFolder("Água").close();
         waterFolder.add(this.water,'visible').name("Ligada");
         waterFolder.add(this.water.position,'y',0.035,1).name("Altura");
         waterFolder.add(this.water.material.uniforms.size,'value',0.1,10).name("Escala");
@@ -404,11 +417,42 @@ export default class Aplicacao {
             clipBias: 0.003,
             shader: Reflector.ReflectorShader
             });
-        this.mirrors[0].position.set(2.2975,5.5,-2.7);
+        this.mirrors[0].position.set(2.297,5.5,-2.7);
         this.mirrors[0].rotation.set(0,-Math.PI/4,0)
-        this.mirrors[1].position.set(-2.2975,5.5,-2.7);
+        this.mirrors[1].position.set(-2.297,5.5,-2.7);
         this.mirrors[1].rotation.set(0,Math.PI/4,0)
         this.statue.add(this.mirrors[0]);
         this.statue.add(this.mirrors[1]);
+    }
+
+    configPOVs(){
+        this.controls["POVs"] = {
+            "Entrada": {pos: [10.88,1.31,-0.08], dir: [-0.97,0.26,0.01]},
+            "Segundo Andar": {pos: [8.39,7.28,-1.71], dir: [-0.88,-0.38,0.27]},
+            "Vendo o Céu": {pos: [5.48,1.6,-0.52], dir: [-0.44,0.9,0.02]},
+            "Top-Down": {pos: [0.11, 14.43, 0.29], dir:[0,-1,0]},
+            "Câmera de Segurança": {pos: [0.06,5.95,-1.47], dir: [-0.82,-0.53,0.23]}
+        };
+        this.controls["SelectedCam"] = this.controls["POVs"]["Entrada"];
+    }
+
+    onSelectCamera(cam){
+        this.flyControlsGui.setValue(false);
+        this.camera.position.set(...this.controls["SelectedCam"].pos);
+        if(cam === this.controls["POVs"]["Câmera de Segurança"]){
+            this.lookAtStatue();
+        } else {
+            this.setCamDirection(...this.controls["SelectedCam"].dir);
+        }
+    }
+
+    lookAtStatue(){
+        if(!this.flyControlsGui.getValue()){
+            this.camera.lookAt(
+                this.statue.position.x,
+                this.statue.position.y + 4 * this.statue.scale.y,
+                this.statue.position.z
+            );
+        }
     }
 }
