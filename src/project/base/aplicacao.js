@@ -248,7 +248,7 @@ export default class Aplicacao {
                         obj.position.set(22.44,30,30.6);
                         obj.lookAt(obj.position.clone().add(new THREE.Vector3(-0.15,-0.99,-0.09)));
                         obj.castShadow = true;
-                        obj.intensity = 5;
+                        obj.intensity = 6.25;
                         obj.shadow.mapSize.width = 2048;
                         obj.shadow.mapSize.height = 2048;
                         obj.shadow.camera.far = 60;
@@ -325,7 +325,7 @@ export default class Aplicacao {
         const baseScale = 0.42;
         this.statue.scale.set(baseScale,baseScale,baseScale);
         this.statueControls = this.gui.addFolder("Estátua").close();
-        this.statueControls.add(this.statue,'visible').name("Visível");
+        this.statueControls.add(this.statue.children[0],'visible').name("Visível");
         this.mirrors = [];
         this.controls["mirrorVisible"] = true;
         this.statueControls.add(this.controls,'mirrorVisible').name("Espelhos").onChange((value) => {   
