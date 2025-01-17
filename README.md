@@ -1,151 +1,70 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/544dWm05)
-# Atividade 2 - Técnicas de Renderização
+﻿# Relatório Trabalho 2 - MATA65 (Computação Gráfica)
 
-## Objetivos:
+## Introdução
+Neste repositório se localiza o produto final do trabalho que marca a conclusão da unidade 2 da disciplina MATA65 - Computação Gráfica na UFBA no semestre 2024.2, ministrada pelo professor [Antônio Apolinário](https://computacao.ufba.br/pt-br/antonio-lopes-apolinario-junior), responsável pelas especificações do trabalho. Para executar a aplicação, é importante ter a pasta [Assets](https://github.com/LucasTBorges/Assets) na raíz do web server que está o executando.
+Nós fomos orientados a desenvolver uma aplicação utilizando a biblioteca [Three.js](https://threejs.org/) que nos permitisse visualizar o modelo do [Palácio de Sponza desenvolvido pela Intel](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html) iluminado corretamente e incluindo mais alguns itens de forma a demonstrar a capacidade do Three.js de simular certos fenômenos ópticos.
+**Observação:** os modelos desenvolvidos pela Intel possuem uma alta contagem de polígonos e texturas de alta resolução e portanto, além de exigirem uma alta quantidade de recursos do dispositivo que está executando a aplicação, podem causar um longo tempo de carregamento na inicialização. Em alguns casos a aplicação chegou a levar um minuto para carregar no meu computador, então a utilização do programa requer um pouco de paciência.
 
-1. Consolidar os temas abordados no decorrer da disciplina, com ênfase nas técnicas de renderização foto-realistas baseadas em algoritmos de rasterização;
-2. Explorar métodos de renderização baseados em mapeamento;
-3. Reforçar o uso de diferentes tipos de fontes luz no controle do foto-realismo de cenas 3D;
-4. Compreender as questões envolvidas na integração de objetos e seus materiais em cenários 3D.
+## Assets
+Esta aplicação faz uso de alguns recursos não presentes originalmente na pasta Assets:
+ - **Modelo Base do Palácio de Sponza:** [Disponível no site da Intel](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html), o arquivo GLTF deve estar localizado no caminho `/Assets/Models/glTF/Sponza-Intel/main1_sponza/`, junto com os arquivos dos quais ele depende.
+ - **Modelo complementar das cortinas do Palácio de Sponza**: Também disponível no site da Intel, o arquivo GLTF e suas dependências devem se encontrar em `/Assets/Models/glTF/Sponza-Intel/pkg_a_curtains/`.
+ - **Textura Normal da Água**: Mapa normal do material da água, já posicionado corretamente nesse repositório, em `/src/assets/`.
+ - **Mapa de Ambiente**: Arquivo HDR contendo uma textura de ambiente utilizado no GroundedSkyBox da aplicação para apresentar um céu realista. Vem junto com as texturas do modelo base do palácio de Sponza, e deve estar localizado em `/Assets/Models/glTF/Sponza-Intel/main1_sponza/textures/`.
+ - **Estátua:** Modelo 3d de uma estátua, publicado no [Sketchfab](https://sketchfab.com/3d-models/estatua-statue-907ae2bb4f23423db76b7ec9cfe6b0e9) pelo usuário [Huargenn](https://sketchfab.com/Huargenn). Já se encontra posicionado corretamente nesse repositório, em `/src/assets/estatua/`.
+
+## Iluminação
+O modelo base do palácio de Sponza já possui embutido nele algumas fontes de luz. Ele possui uma fonte de luz direcional branca representando o sol e outras múltiplas fontes pontuais alaranjadas representando as luminárias. Além de importar a iluminação do modelo, tive que realizar algumas mudanças para deixar a cena mais realista:
+
+ - Configurei a intensidade das luzes para deixar o cenário mais agradável.
+ - Modifiquei a direção da iluminação do sol para manter a consistência com a posição do sol na  imagem utilizada como textura para o céu.
+ - Adicionei uma luz ambiente para simular a iluminação indireta.
  
-## Motivação:
+ A fim de tornar a aplicação mais interativa, adicionei a GUI controles para que usuário possa realizar ajustes à iluminação da cena.
 
-Na área de renderização diversos modelos de cenários virtuais são utilizados como *benchmark* de algoritmos. Um dos cenarios mais usados é o do Palacio de Sponza, localizado na cidade de Dubrovnik na Croacia [1]. Na Figura 1 podemos ver a vista externa e interna do palacio e no [vídeo](https://www.youtube.com/watch?v=eXR36vbX7xM) acompanhar um tour pelo átrio do palacio. 
+## Sombras
+Ainda dentro do tópico de iluminação, o realismo da cena estava prejudicado por conta da falta de sombras. Portanto, eu habilitei sombras na cena e configurei todas as malhas de forma que elas projetassem e recebessem sombras. Entretanto, devido ao número de fontes de luz na cena, configurar todas elas para projetar sombras se mostrou inviável. Assim, optei por manter apenas o sol projetando sombras, o que já ocasionou uma diferença notável.
+Foi necessário ajustar o frustrum da câmera de sombras do sol para que este abrangesse todo o cenário, pois inicialmente apenas uma pequena região da cena estava sendo mapeada no mapa de sombras.
 
-<img src="./imgs/SPONZA_PLACE_AT_NIGHT,_DUBROVNIK.jpg" height=300> <img src="./imgs/Pati_del_palau_Sponza_de_Dubrovnik.jpeg" height=300> 
+## Skybox
+Um dos requisitos do trabalho era que deveria ser possível ver o ceú quando o observador olhasse para cima enquanto posicionado no centro do átrio. Para atingir esse feito, adicionei um GroundedSkyBox à cena com a textura disponiblizada na própria pasta de texturas do modelo base do palácio.
 
-*Figura 1 - Palacio de Sponza, Dubrovnik, Croacia: visão externa e interna* 
+## Disposição da Cena
+Fomos orientados a incluir, para além do modelo base do Palácio de Sponza, um dos modelos complementares disponibilizados pela Intel e optei por incluir o modelo que adiciona cortinas ao cenário. Para além disso, foi necessário incluir 2 outros modelos geométricos que permitissem a demonstração de efeitos do Three.js. Assim, incluí um par de espelhos e um plano de água. Também incluí uma estátua na cena, que fica girando em torno do próprio eixo e pode ter sua posição e tamanho controlada pelo usuário, e os espelhos acompanham as tranformações (exceto rotação) da estátua. O intuito da adição da estátua foi visualizar os reflexos reagindo a um objeto se movendo.
+Os objetos podem ser controlados pela interface: a água, espelhos e a estátua podem possuir a visibilidade desligados a comando do usuário, entre outros parâmetros.
 
-O modelo 3D do átrio do Palacio de Sponza foi criado por Marko Dabrovic no início de 2002 e melhorado em 2010 por Frank Meinl. Ao longo dos anos, esse modelo tornou-se uma das cenas 3D mais populares para testar algoritmos de iluminação global devido à sua estrutura arquitetônica específica, que é particularmente complexa para a propagação e iteração da luz. Artigos como [6] e [7], para citar apenas 2, utilizam o modelo Sponza como base para apresentação e analise dos resultados de seus algoritmos. 
+## Controles de Câmera
+As especificações do trabalho indicavam que deveria ser possível navegar livremente pelo cenário usando controles do Three.js, bem como navegar por pontos de vista fixos previamente definidos por mim. Através da GUI, o usuário pode habilitar o modo de Câmera Livre e utilizar os comandos do [FlyControls](https://threejs.org/docs/#examples/en/controls/FlyControls) do Three.js para passear na cena. Habilitei o parâmetro dragToLook, e portanto o usuário deve clicar e arrastar no canvas para alterar a direção da câmera.
+Também especifiquei alguns pontos fixos que o usuário pode escolher para ser transportado para um ponto de vista predefinido. Dentre esses pontos se encontra o rotulado como "Câmera de Segurança", que é o único cuja direção da câmera é dinâmica: se o usário modificar a posição do modelo da estátua com este ponto de vista selecionado e o modo de câmera livre estiver desablitado, a câmera acompanha o modelo da estátua.
+Selecionar um ponto de vista fixo desabilita o modo de Câmera Livre.
 
-No entanto, hoje em dia é considerado como um modelo simples, comparado a modelos mais desafiadores como o [*San Miguel*](https://casual-effects.com/g3d/data10/index.html#mesh29) [2] e o 
-[*Amazon Lumberyard Bistro*](https://developer.nvidia.com/orca/amazon-lumberyard-bistro) [3]. 
+## GUI (Interface Gráfica)
+A interface para os controles da aplicação foi gerada com a biblioteca [lil-gui](https://lil-gui.georgealways.com/).
 
-Em 2022, o [grupo de pesquisa em GPU da Intel](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/overview.html) atualizou o modelo Sponza, incorporando materiais mais realistas com geometria de alta resolução e texturas 4K, fotogrametricamente compatíveis com o átrio do palacio de Sponza real [4]. A Figura 2 mostra o novo modelo base gerado. Além disso o bem como as adições de novos elementos ao cenário. 
+### Controles Básicos:
 
-<img src="./imgs/sponza-base-scene.jpg" width=700> 
+ - *Camera Info*: Quando habilitado, exibe um painel de informações no canto inferior direito da tela com as coordenadas da posição e a direção da câmera.
+ - *Free Cam*: Quando habilitado, o usuário pode navegar livremente pelo cenário usando os FlyControls do Three.js.
+ - *POVs*: Menu dropdown com pontos de vista predefinidos. Selecionar um ponto de vista transporta a câmera para o ponto de vista em questão e desabilita o Free Cam.
+ 
+### Estátua:
+ - *Visível*: Controla a visibilidade da estátua.
+ - *Espelhos*: Controla a visibilidade dos espelhos.
+ - *Posição*: Desloca a estátua e os espelhos através do eixo X pelo átrio do palácio. Se o Free Cam estiver desabilitado e o ponto de vista "Câmera Segurança" estiver selecionado, modificar esse parâmetro ocasio
+ - *Escala*: Controla o tamanho da estátua e dos espelhos.
+ - *Auto Rotacionar*: Quando habilitado, a estátua fica girando em torno do eixo Y local.
+ - *Velocidade da Rotação*: Controla a velocidade da rotação em radianos por segundo.
 
-<img src="./imgs/colorful-curtains-autodesk.jpg" width=250> <img src="./imgs/ivy-vines.jpg" width=250> <img src="./imgs/sponza-tree.jpg" width=250> 
+### Água:
+ - *Ligada*: Controla a visibilidade da água.
+ - *Altura*: Controla o nível da água (posição no eixo Y).
+ - *Escala*: Controla a escala da textura do material.
+ - *Ondulação*: Controla o nível de ondulação da água. Níveis maiores aumentam o efeito de distorção causado pela refração da água.
+ - *Cor*: Controla a cor da água.
+ - *Velocidade de Fluxo*: Controla a velocidade de deslocamento do offset da textura.
 
-<img src="./imgs/pkg-10k-candles.jpg" width=200> <img src="./imgs/knight.png" width=200> <img src="./imgs/pkg-explosion.jpg" width=200> <img src="./imgs/pkg-f-flood.jpg" width=200> 
-
-*Figura 2 - Modelo Sponza atualizado pela Intel: primeira linha - modelo base; segunda linha - modelos com elementos adicionados (cortinas, trepadeira e cipreste); terceira linha - elementos mais complexos (10.000 velas, modelo de cavaleiro com animação, modelos volumétricos de explosão e modelo de fluido).* 
-
-Vale ressaltar que apenas o modelo base contem a geometria do átrio do palácio de Sponza e suas texturas. 
-Os demais modelos possuem apenas a geometria e texturas correspondentes aos elementos adicionados, 
-que foram modelados de forma a "encaixar" com o modelo base. 
-
-Tanto o modelo base quanto os demais modelos adicionais são fornecidos em diversos formatos, como [GLTF](https://www.khronos.org/Gltf), 
-[FBX](https://code.blender.org/2013/08/fbx-binary-file-format-specification/) e 
-[USD](https://openusd.org/release/index.html) para os modelos geométricos, e [VDB](https://www.openvdb.org/) (Volumetric Database File) 
-para os modelos volumétricos.
-
-## Atividade:
-
-Nessa atividade voce deverá criar um cenário com renderização foto-realista baseado no modelo 3D Sponza da Intel adicionando alguns de seus 
-complementos efeitos que o *framework Three.JS* [9] [10]fornece suporte. 
-
-Como podemos ver na Figura 1, o átrio do Palácio de Sponza real possui diversas fontes de luz artificial ao longo da parte interna do arcos do 
-átrio. Além disso recebe iluminação de uma abertura na parte superior do átrio que permite a passagem da luz natural do sol. 
-
-Ainda na Figura 1 podemos notar que a parte externa do Palácio também possui iluminação artificial. Existe um ambiente ao redor do palácio, 
-formado por outras construções, montanhas, céu, etc. 
-
-Dessa forma, o cenário que voce vai construir deve ser composto:
-
-1. Modelo base do átrio do Palacio de Sponza, desenvolvido pela Intel;
-2. 1 dos modelos complementares do Palácio de Sponza da Intel;
-3. Fontes de luz que iluminam o cenário interno do átrio;
-    *A iluminação deve ser semelhante ao modelo real;
-    * [Modelos glTF](https://threejs.org/manual/#en/load-gltf) armazenam as informações das fontes de luz do cenário, que precisam ser identificadas e ajustadas para produzir a iluminação correta do cenário.
-4. Ambiente externo realista;
-    * O ambiente externo pode ser representado por um [Mapeamento de Ambiente alinhado ao solo](https://threejs.org/examples/webgl_materials_envmaps_groundprojected.html). 
-    * Estando o observador dentro do pátio interno deve ser possível ver o ambiente externo pela abertura no teto. 
-5. Pelo menos 2 modelos geométricos incluidos por voce, que permitam testar 2 ou mais efeitos de iluminação [8] "avançados" do *framework Three.JS* [9] [10]. 
-
-    Seguem alguns exemplos de efeitos interessantes:
-    * [Objetos translucidos](https://threejs.org/examples/webgl_materials_cubemap_refraction.html)
-    * [Objetos com verniz](https://threejs.org/examples/webgl_materials_physical_clearcoat.html)
-    * [Espelhos](https://threejs.org/examples/webgl_mirror.html)
-    * [Influência do ambiente na iluminação](https://threejs.org/examples/webgl_lightprobe_cubecamera.html)
-    * [Fontes Extensas de Luz](https://threejs.org/examples/webgl_lights_rectarealight.html)
-    * [Espelhamento Dinâmico do cenário](https://threejs.org/examples/webgl_materials_cubemap_dynamic.html)
-    * [Transmissão da luz](https://threejs.org/examples/webgl_materials_physical_transmission.html)
-    * [Água](https://threejs.org/examples/webgpu_ocean.html)
-    * outros que voce ache interessante (mas que não sejam básicos).
-
-    Esses modelos geométricos podem ser carregados do repositório *Assets*.
-
-    Dependendo do tipo de efeito escolhido pode fazer sentido modificar a connfiguração da iluminação original do modelo Sponza. 
-    Nesse caso voce pode fazer esse controle através da *GUI*.
-
-6. Uma camera que permita caminhar pelo cenário de forma livre. 
-    * O controle da camera deve ser feito via os controladores fornecidos pelo *Three.JS*.
-
-7. Pontos de visualização fixos, que transportem o observador até esses pontos dentro do cenário. 
-    * Utilize a *GUI* para seleção dos pontos de interesse.  
-
-## Entrega e Critérios de Avaliação:
-
-O trabalho será submetido individualmente através do repositório disponibilizado pelo professor, via *GitHub Classroom*, para essa atividade. A data de entrega estará definida na atividade do *Google/Github Classroom*.  
-
-> **Não serão consideradas versões enviadas por e-mail, Google Classroom, Discord, ou outros meios.**
-
-O trabalho será avaliado a partir dos seguintes critérios:
-
-| Critério | Pontuação |
-| :--- | :---: |
-| 1. Relatório (README) | 0,5 |
-| 2. Montagem do cenário (itens 1 e 2) | 1,0 |
-| 3. Ajuste da iluminação do pátio (item 3) | 1,5 |
-| 4. Percurso no cenário (item 6) | 1,0 |
-| 5. Pontos de observação fixos (item 7) | 1,0 |
-| 6. Realismo dos materiais (item 5) | 3,0 |
-| 7. Ambiente externo (item 4) | 2,0 |
-| 8. Criatividade na composição do cenário (extra) | 1,0 |
-
-Espera-se no relatório uma breve descrição do que foi utilizado em termos de conceitos de Computação Gráfica e objetos do *Three.js*. 
-Deve ser escrito utilizando a linguagem *markdown* e substituir o README original do repositório. 
-
-Modelos externos ao diretório *Assets* que venham a ser utilizados devem ser incluídos dentro em diretório local dentro do seu repositorio. 
-
->**IMPORTANTE** => Os modelos Sponza e complementos não precisam ser colocados no seu repositório!! Considere que eles estarão localizados no diretório */Assets/Models/glTF/Sponza-Intel*, mantendo o nome dos diretórios originais gerados na descompactação dos arquivos .zip dos modelos do site da Intel.
-
-## Penalidades:              
-
->  Trabalhos entregues fora do prazo será penalizados em 1,0 ponto por dia de atraso.
-> 
->> **Em casos de plágio (total ou parcial) todos os envolvidos terão suas notas zeradas**. 
-
-## Observações importantes:              
-
-> Não presuma nada! Em caso de dúvida pergunte ao professor. 
-> 
-> Perguntas e dúvidas **gerais** devem ser postadas no canal *#atividades* do *Discord*. 
->
-> **Dúvidas específicas** envolvendo seu código ou sua solução devem ser enviadas pelo *Discord* como mensagens privadas. 
->
-> Mantenha sempre seu repositório atualizado para que o professor possa ter acesso ao código e ajuda-lo nas suas dúvidas.  
-
-## Referências: 
-
-[1]		Wikipedia, **Sponza Palace**, disponível em: https://en.wikipedia.org/wiki/Sponza_Palace
-
-[2]     Frank Gennari, **San Miguel Scene**. 2017. Disponível em: https://3dworldgen.blogspot.com/2017/01/san-miguel-scene.html
-
-[3]     Amazon Lumberyard, **Amazon Lumberyard Bistro, Open Research Content Archive (ORCA)**. Disponível em: https://developer.nvidia.com/orca/amazon-lumberyard-bistro 
-
-[4]     Anton Kaplanyan, **Intel's Graphics Research Organization on a Mission to Deliver the Best Immersive Visuals**. Disponível em: https://www.intel.com/content/www/us/en/newsroom/opinion/intel-graphics-step-up-research.html
-
-[5]		Intel, **GPU Research Samples**. Disponível em: https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html
-
-[6]		Smal, Niklas, and Maksim Aizenshtein. **Real-time global illumination with photon mapping**. Ray Tracing Gems: High-Quality and Real-Time Rendering with DXR and Other APIs (2019): 409-436.
-
-[7]		Tatzgern, Wolfgang, Alexander Weinrauch, Pascal Stadlbauer, Joerg H. Mueller, Martin Winter and Markus Steinberger. **Radiance Caching with On-Surface Caches for Real-Time Global Illumination**. Proc. ACM Comput. Graph. Interact. Tech. 7 (2024): 38:1-38:17.
-
-[8] 	MARSCHNER, Steve; SHIRLEY, Peter. "**Fundamentals of Computer Graphics**". 5th Edition CRC Press, 2021.
-
-[9]		Dirksen, J., **Learn Three.JS: Program 3D animations and visualizations for the web with JavaScript and WebGL**. 4th Edition, Packt Publishing, 2023.
-
-[10]	**Three.JS**. https://threejs.org/docs/index.html.
-
+### Iluminação
+ Há uma subpasta para cada fonte de luz (as luminárias são tratadas como um grupo para este fim), cada uma com três parâmetros que podem ser alterados:
+ - *Ligado*: Controla a visibilidade da fonte de luz.
+ - *Cor*: Controla a cor da fonte de luz.
+ - *Intensidade*: Controla a intensidade da fonte de luz.
