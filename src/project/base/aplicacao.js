@@ -151,7 +151,7 @@ export default class Aplicacao {
         //Modelo da estátua
         const statue = new Observable();
         const startStatue = new Date();
-        gltfLoader.load("/src/assets/estatua/scene.gltf",
+        gltfLoader.load("./src/assets/estatua/scene.gltf",
             (gltf) => {
                 console.log("Modelo da estátua carregado em "+(new Date().getTime()-startStatue.getTime())/1000+" segundos");
                 statue.emit(gltf);
@@ -199,7 +199,7 @@ export default class Aplicacao {
         const waterNormals = new Observable();
         const startWater = new Date();
         const loader = new THREE.TextureLoader();
-        loader.load("/src/assets/waternormals.jpg",
+        loader.load("./src/assets/waternormals.jpg",
             (texture) => {
                 console.log("Water Normals carregado em "+(new Date().getTime()-startWater.getTime())/1000+" segundos");
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
