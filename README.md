@@ -1,8 +1,11 @@
 ﻿# Relatório Trabalho 2 - MATA65 (Computação Gráfica)
 
+<img src="./imgs/my_sponza.jpg" alt="Captura de Tela da Cena" width="1000"/>
+
 ## Introdução
 Neste repositório se localiza o produto final do trabalho que marca a conclusão da unidade 2 da disciplina MATA65 - Computação Gráfica na UFBA no semestre 2024.2, ministrada pelo professor [Antônio Apolinário](https://computacao.ufba.br/pt-br/antonio-lopes-apolinario-junior), responsável pelas especificações do trabalho. Para executar a aplicação, é importante ter a pasta [Assets](https://github.com/LucasTBorges/Assets) na raíz do web server que está o executando.
 Nós fomos orientados a desenvolver uma aplicação utilizando a biblioteca [Three.js](https://threejs.org/) que nos permitisse visualizar o modelo do [Palácio de Sponza desenvolvido pela Intel](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html) iluminado corretamente e incluindo mais alguns itens de forma a demonstrar a capacidade do Three.js de simular certos fenômenos ópticos.
+
 **Observação:** os modelos desenvolvidos pela Intel possuem uma alta contagem de polígonos e texturas de alta resolução e portanto, além de exigirem uma alta quantidade de recursos do dispositivo que está executando a aplicação, podem causar um longo tempo de carregamento na inicialização. Em alguns casos a aplicação chegou a levar um minuto para carregar no meu computador, então a utilização do programa requer um pouco de paciência.
 
 ## Assets
