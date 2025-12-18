@@ -2,7 +2,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-		<link rel="icon" type="image/x-icon" href="/Assets/icons/icon.png">	
+		<link rel="icon" type="image/x-icon" href="./src/assets/icon.png">	
         <link rel="stylesheet" type="text/css" href="./src/assets/style.css">
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,9 +10,11 @@
 	</head>
 
 	<script type="importmap">
-			{ "imports": {
-				    "three"         : "/Assets/scripts/three.js/build/three.module.js"
-				   	}
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+					"three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+				}
 			}
 	</script>
 

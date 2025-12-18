@@ -8,8 +8,9 @@ import GuiComponent from '../components/guiComponent/guiComponent.js';
 import LoadingService from '../services/loadingService.js';
 import InfoComponent from '../components/infoComponent/infoComponent.js';
 export default class Aplicacao {
-    constructor(title){
+    constructor(title, povs){
         this.controls = {};
+        this.povs = povs;
         this.ui = new Interface();
         this.onInit = new Observable();
         this.onResizeEvent = new Observable();
@@ -26,6 +27,7 @@ export default class Aplicacao {
         this.time = 0;
         this.info = this.ui.addComponent("info",new InfoComponent(this)).hide();
         this.guiManager.addAlwaysOnItems(this.gui.add(this.info,'visible').name("Camera Info"));
+        this.curtainsSuccesfullyLoaded = null; // Will be true/false when curtains loading finishes or fails
     }
 
     init(){
@@ -52,10 +54,17 @@ export default class Aplicacao {
             this.statue.add(statue.scene.children[0]);
     
             // Curtains:
-            const curtains = assets[2];
-            curtains.scene.children.forEach((child) => {
-                this.sponza.add(child);
-            });
+            if (this.curtainsSuccesfullyLoaded === null) {
+                this.toastService.show("warning","Curtains loading status unknown","Curtains loading did not complete properly, but no error was reported.");
+            }
+            else if (this.curtainsSuccesfullyLoaded === false) {
+                this.toastService.show("info","Curtains failed to load","The application will run without the curtains. Check console for more details.");
+            } else{
+                const curtains = assets[2];
+                curtains.scene.children.forEach((child) => {
+                    this.sponza.add(child);
+                });
+            }
 
             // Envmap:
             this.envmap = assets[3];
@@ -168,12 +177,14 @@ export default class Aplicacao {
         gltfLoader.load(assetsFolder + "pkg_a_curtains/NewSponza_Curtains_glTF.gltf",
             (gltf) => {
                 console.log("Curtains model loaded in "+(new Date().getTime()-startCurtains.getTime())/1000+" seconds");
+                this.curtainsSuccesfullyLoaded = true;
                 curtains.emit(gltf);
             },
             (xhr) => {
             },
             (error) => {
-                curtains.fail(error);
+                this.curtainsSuccesfullyLoaded = false;
+                curtains.emit(null); // Does not fail the whole loading process if curtains fail
             }
         );
 
@@ -425,13 +436,7 @@ export default class Aplicacao {
     }
 
     configPOVs(){
-        this.controls["POVs"] = {
-            "Entrance": {pos: [10.88,1.31,-0.08], dir: [-0.97,0.26,0.01]},
-            "Second Floor": {pos: [8.39,7.28,-1.71], dir: [-0.88,-0.38,0.27]},
-            "Looking at Sky": {pos: [5.48,1.6,-0.52], dir: [-0.44,0.9,0.02]},
-            "Top-Down": {pos: [0.11, 14.43, 0.29], dir:[0,-1,0]},
-            "Security Camera": {pos: [0.06,5.95,-1.47], dir: [-0.82,-0.53,0.23]}
-        };
+        this.controls["POVs"] = this.povs;
         this.controls["SelectedCam"] = this.controls["POVs"]["Entrance"];
     }
 

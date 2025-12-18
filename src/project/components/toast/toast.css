@@ -1,5 +1,5 @@
 .toast-wrapper {
-    position: absolute;
+    position: fixed;
     top: 80px;
     right: 20px;
     width: 350px;
@@ -10,6 +10,7 @@
     flex-direction: column;
     gap: 10px;
 }
+
 .toast {
     background-color: #1a1a1a;
     color: #f0f0f0;
@@ -18,7 +19,7 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     font-family: 'Lato', sans-serif;
     pointer-events: auto;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.3s ease, margin-top 0.3s ease;
     border-left: 4px solid transparent;
     display: grid;
     grid-template-columns: 40px 1fr 24px; 
@@ -26,8 +27,15 @@
     align-items: start;
 }
 
-.show-toast { opacity: 1; transform: translateY(0); }
-.hide-toast { opacity: 0; transform: translateY(-20px); }
+.show-toast { 
+    opacity: 1; 
+    margin-top: 0;
+}
+
+.hide-toast { 
+    opacity: 0; 
+    margin-top: -20px;
+}
 
 .success-border { border-left-color: #47D764; }
 .error-border { border-left-color: #ff355b; }
