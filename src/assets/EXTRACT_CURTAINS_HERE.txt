@@ -1,0 +1,18 @@
+Download pkg_a_curtains.zip from https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html.
+Move the pkg_a_curtains.zip file here (/src/assets) and extract the model here.
+This should create a new folder containing all necessary files for loading the model: /src/assets/pkg_a_curtains.
+The new folder contains the model in multiple file formats.
+This project uses the gltf model, so the following files can be safely deleted from the folder:
+NewSponza_1_Curtains_glTF.max
+NewSponza_Main_USD_003.max
+NewSponza_1_Curtains_USD.max
+NewSponza_Curtains_FBX_YUp.fbx
+NewSponza_Curtains_FBX_ZUp.fbx
+NewSponza_Curtains_USD_YUp.usda
+NewSponza_Curtains_USD_ZUp.usda
+Render_Curtains_A.jpg
+Render_Curtains_B.jpg
+Render_Curtains_C.jpg
+Render_Curtains_D.jpg
+Render_Curtains_E.jpg
+Render_Curtains_F.jpg

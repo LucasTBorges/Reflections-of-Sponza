@@ -34,7 +34,7 @@ export default class Aplicacao {
         const app = this;
         this.loadAssets().subscribe((assets) => {
             const start = new Date();
-            /* console.log("models",assets); */
+
             //Modelo base:
             const main = assets[0];
             this.sponza = main.scene;
@@ -102,7 +102,6 @@ export default class Aplicacao {
         this.renderer.setAnimationLoop(this.animate.bind(this));
         this.canvas.getElement().appendChild(this.renderer.domElement);
         window.addEventListener( 'resize', this.onResize.bind(this));
-        console.log(this.scene); //Remover posteriormente
     }
 
     onResize() {
@@ -136,7 +135,8 @@ export default class Aplicacao {
         //Modelo base
         const main = new Observable();
         const startMain = new Date();
-        gltfLoader.load("/Assets/Models/glTF/Sponza-Intel/main1_sponza/NewSponza_Main_glTF_003.gltf",
+        const assetsFolder = "./src/assets/";
+        gltfLoader.load(assetsFolder + "main_sponza/NewSponza_Main_glTF_003.gltf",
             (gltf) => {
                 console.log("Modelo base carregado em "+(new Date().getTime()-startMain.getTime())/1000+" segundos");
                 main.emit(gltf);
@@ -151,7 +151,7 @@ export default class Aplicacao {
         //Modelo da estátua
         const statue = new Observable();
         const startStatue = new Date();
-        gltfLoader.load("./src/assets/estatua/scene.gltf",
+        gltfLoader.load(assetsFolder + "estatua/scene.gltf",
             (gltf) => {
                 console.log("Modelo da estátua carregado em "+(new Date().getTime()-startStatue.getTime())/1000+" segundos");
                 statue.emit(gltf);
@@ -166,7 +166,7 @@ export default class Aplicacao {
         //Modelo das cortinas
         const curtains = new Observable();
         const startCurtains = new Date();
-        gltfLoader.load("/Assets/Models/glTF/Sponza-Intel/pkg_a_curtains/NewSponza_Curtains_glTF.gltf",
+        gltfLoader.load(assetsFolder + "pkg_a_curtains/NewSponza_Curtains_glTF.gltf",
             (gltf) => {
                 console.log("Modelo das cortinas carregado em "+(new Date().getTime()-startCurtains.getTime())/1000+" segundos");
                 curtains.emit(gltf);
@@ -182,7 +182,7 @@ export default class Aplicacao {
         const envmap = new Observable();
         const startEnvmap = new Date();
         const hdrLoader = new RGBELoader();
-        hdrLoader.loadAsync("/Assets/Models/glTF/Sponza-Intel/main1_sponza/textures/kloppenheim_05_4k.hdr")
+        hdrLoader.loadAsync(assetsFolder + "main_sponza/textures/kloppenheim_05_4k.hdr")
         .then((texture) => {
                 texture.mapping = THREE.EquirectangularReflectionMapping;
                 const skybox = new GroundedSkybox(texture,50,40);
@@ -199,7 +199,7 @@ export default class Aplicacao {
         const waterNormals = new Observable();
         const startWater = new Date();
         const loader = new THREE.TextureLoader();
-        loader.load("./src/assets/waternormals.jpg",
+        loader.load(assetsFolder + "waternormals.jpg",
             (texture) => {
                 console.log("Water Normals carregado em "+(new Date().getTime()-startWater.getTime())/1000+" segundos");
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;

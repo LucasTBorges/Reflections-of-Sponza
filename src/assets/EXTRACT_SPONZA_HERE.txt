@@ -1,0 +1,19 @@
+Download main_sponza.zip from https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html
+Move the main_sponza.zip file here (/src/assets) and extract the model here.
+This should create a new folder containing all necessary files for loading the model: /src/assets/main_sponza.
+The new folder contains the model in multiple file formats.
+This project uses the gltf model, so the following files can be safely deleted from the folder:
+NewSponza_Main_glTF_003.max
+NewSponza_Main_USD_003.max
+NewSponza_Main_USD_Yup_003.usda
+NewSponza_Main_USD_Zup_003.usda
+NewSponza_Main_Yup_003.fbx
+NewSponza_Main_Zup_003.fbx
+Render_Main_E_USD_Fix.png
+Render_Main_E_Fix.png
+Render_Main_F.png
+Render_Main_E.png
+Render_Main_A.png
+Render_Main_C.png
+Render_Main_D.png
+Render_Main_B.png
