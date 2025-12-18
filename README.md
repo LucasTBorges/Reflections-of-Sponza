@@ -18,7 +18,7 @@ cd Reflections-of-Sponza
 ```
 
 ### 2. Install Sponza Assets (Crucial Step)
-Because the Intel Sponza assets are large and proprietary, they are not included in this repository. You must download them manually:
+Because the Intel Sponza assets are considerably large, they are not included in this repository. You must download them manually:
 
 1.  Download `main_sponza.zip` and `pkg_a_curtains.zip` from the [Intel Graphics Research Samples page](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html).
 2.  Extract the contents of both zip files into the `/src/assets/` folder of this project.
