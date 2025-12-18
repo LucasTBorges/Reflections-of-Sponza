@@ -6,7 +6,7 @@ export default class ToastService extends Service {
         this.ui.addComponent(toast.id, toast);
         if (duration){
             setTimeout(() => {
-                toast.hideToast(); // Destrói o toast após o tempo determinado
+                toast.hideToast(); // Destroys the toast after duration
             }, duration);
         }
     }

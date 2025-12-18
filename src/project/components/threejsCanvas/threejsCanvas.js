@@ -1,11 +1,11 @@
 import Component from '../../base/component.js';
-// Importa o css do componente para o documento (utiliza o arquivo no mesmo diretório com o mesmo nome do arquivo js)
+// Imports the component's CSS into the document (uses the file in the same directory with the same name as the js file)
 const styleSheetUrl = import.meta.url.replace('.js', '.css');
 const styleSheet = new URL(styleSheetUrl).href;
 document.head.innerHTML += `<link rel="stylesheet" href="${styleSheet}">`;
 
 export default class ThreeJsCanvas extends Component {
-    //Componente que contém o canvas do threejs, e um overlay com um título
+    //Component that contains the threejs canvas, and an overlay with a title
     constructor(app,title){
         super(app);
         this.title = title;
@@ -21,17 +21,17 @@ export default class ThreeJsCanvas extends Component {
         return this;
     }
 
-    //Fecha o overlay
+    //Closes the title overlay with an animation
     closeOverlay(){
         this.overlay.classList.add("closed-overlay");
         setTimeout(() => {
-            //Destrói o overlay após a animação de fechamento, configurada no threejsCanvas.css
+            //Destroys the overlay after the closing animation, set in threejsCanvas.css
             this.overlay.remove();
         }, 500);
     }
 
-    // Se o título for definido, cria um overlay com o título e o botão de fechar.
-    // Caso contrário, retorna apenas o canvas
+    // If the title is set, creates an overlay with the title and the close button.
+    // Otherwise, returns only the canvas
     getHTML() {
         const overlay = `    
             <div id="title-overlay">
@@ -46,7 +46,7 @@ export default class ThreeJsCanvas extends Component {
         return output;
     }
 
-    //SVG do ícone de fechar título (Disponível em https://icons.getbootstrap.com/icons/x/)
+    //SVG of the close title icon (Available at https://icons.getbootstrap.com/icons/x/)
     closeIconHTML() {
         return `
             <svg class="icon-close" fill="currentColor" viewBox="0 0 16 16">

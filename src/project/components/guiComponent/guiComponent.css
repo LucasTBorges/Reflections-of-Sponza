@@ -3,15 +3,16 @@
 }
 
 .lil-gui { 
-    --background-color: #1a1a1a;
+    --background-color: rgba(20, 20, 20, 0.4);
     --text-color: #e5e5e5;
     --title-background-color: #2c2c2c;
     --title-text-color: #d4af37;
     --widget-color: #444;
     --hover-color: #555;
     --focus-color: #d4af37;
-    --number-color: #2cc9ff;
-    --string-color: #a2ff00;
+    --number-color: #eeeeee;
+    --string-color: #eeeeee;
+    backdrop-filter: blur(6px);
     font-family: 'Lato', sans-serif !important;
 }
 
@@ -26,3 +27,45 @@
     font-weight: 600;
     border-left: 3px solid #d4af37;
 }
+
+.lil-gui .controller.boolean input[type="checkbox"]:checked {
+    background-color: #d4af37;
+    border-color: #d4af37;
+    color: #1a1a1a;
+}
+
+/* --- FIX: Force Gold Color on Click/Drag (Overrides Hover Grey) --- */
+
+/* 1. Fix for Text Inputs and Sliders */
+.lil-gui .controller input:focus:hover,
+.lil-gui .controller input:active:hover {
+    color: var(--focus-color) !important;       /* Forces Text Gold */
+    border-color: var(--focus-color) !important; /* Forces Border Gold */
+}
+
+/* 2. Fix for Dropdown Menus (Select) */
+.lil-gui .controller select:focus:hover,
+.lil-gui .controller select:active:hover {
+    color:  #1a1a1a !important;
+    border-color: var(--focus-color) !important;
+}
+.lil-gui .controller.option .display:hover,
+.lil-gui .controller.option .display:active {
+    background-color: var(--focus-color) !important;
+}
+
+/* 3. Fix for Checkboxes */
+.lil-gui .controller.boolean input[type="checkbox"]:checked:hover {
+    background-color: var(--focus-color) !important;
+    border-color: var(--focus-color) !important;
+}
+
+/* 4. Fix for the Slider "Fill" Bar (The part that moves) */
+/* This ensures the filled part of the slider stays gold while dragging */
+.lil-gui .controller .slider:active:hover,
+.lil-gui .controller .slider:hover {
+    background-color: var(--focus-color); /* Keeps the track dark */
+}
+
+/* This targets the internal fill of the slider if accessible via CSS */
+/* Note: lil-gui handles some of this via JS canvas, but this helps the container */

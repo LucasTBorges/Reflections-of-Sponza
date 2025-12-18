@@ -1,11 +1,11 @@
 import Component from '../../base/component.js';
-// Importa o css do componente para o documento (utiliza o arquivo no mesmo diretório com o mesmo nome do arquivo js)
+// Imports the component's CSS into the document (uses the file in the same directory with the same name as the js file)
 const styleSheetUrl = import.meta.url.replace('.js', '.css');
 const styleSheet = new URL(styleSheetUrl).href;
 document.head.innerHTML += `<link rel="stylesheet" href="${styleSheet}">`;
 
 export default class LoadingComponent extends Component {
-    //Componente que exibe um spinner de carregamento
+    //Component that displays a loading spinner
     getHTML() {
         return `
         <div class="loading-overlay" id="loading-screen"> <div class="spinner"></div>

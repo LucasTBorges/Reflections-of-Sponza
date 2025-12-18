@@ -19,39 +19,39 @@ export default class Component {
         return this._visible;
     }
 
-    //Executado após a criação do elemento e o conteúdo HTML ser adicionado
+    // Executed after element creation and HTML content is added
     init() {
         return this;
     }
 
-    //Retorna o HTML do componente
+    // Returns the component's HTML
     getHTML() {
         return "";
     }
 
-    //Retorna o elemento do componente
+    // Returns the component's element
     getElement() {
         return this.element;
     }
 
-    //Mostra o componente
+    // Shows the component
     show() {
         this._visible = true;
         this.element.style.display = '';
         return this;
     }
 
-    //Esconde o componente
+    // Hides the component
     hide() {
         this._visible = false;
         this.element.style.display = 'none';
         return this;
     }
 
-    //Destrói o componente
+    // Destroys the component
     destroy() {
         this.element.remove();
-        //this.Interface é declarado na classe Interface durante o appendChild
+        // this.Interface is declared in the Interface class during appendChild
         this.Interface.removeChild(this.name);
         return this;
     }

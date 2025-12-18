@@ -1,4 +1,3 @@
-
 import { THREE, FlyControls, GLTFLoader, RGBELoader, GroundedSkybox, Water, Reflector } from '../util/imports.js';
 import GuiManager from './guiManager.js';
 import Interface from './interface.js';
@@ -14,11 +13,11 @@ export default class Aplicacao {
         this.ui = new Interface();
         this.onInit = new Observable();
         this.onResizeEvent = new Observable();
-        this.onRender = new Observable(); //Emite timeDelta
+        this.onRender = new Observable(); // Emits timeDelta
         this.guiComponent = this.ui.addComponent("gui", new GuiComponent(this));
         this.gui = this.guiComponent.gui;
-        // A ordem de inicialização dos serviços é importante.
-        // As dependências de um serviço devem ser inicializadas antes dele
+        // The initialization order of services is important.
+        // A service's dependencies must be initialized before it
         this.loadingService = new LoadingService(this);
         this.toastService = new ToastService(this);
         this.guiManager = new GuiManager(this.gui);
@@ -35,7 +34,7 @@ export default class Aplicacao {
         this.loadAssets().subscribe((assets) => {
             const start = new Date();
 
-            //Modelo base:
+            // Base model:
             const main = assets[0];
             this.sponza = main.scene;
             const lights = main.parser.json.extensions?.KHR_lights_punctual?.lights || [];
@@ -47,29 +46,29 @@ export default class Aplicacao {
                 }
             });
 
-            //Estátua:
+            // Statue:
             const statue = assets[1];
             this.statue = new THREE.Group();
             this.statue.add(statue.scene.children[0]);
     
-            //Cortinas:
+            // Curtains:
             const curtains = assets[2];
             curtains.scene.children.forEach((child) => {
                 this.sponza.add(child);
             });
 
-            //Envmap:
+            // Envmap:
             this.envmap = assets[3];
 
-            //Water Normals:
+            // Water Normals:
             this.waterNormals = assets[4];
 
             this.makeScene();
             this.onInit.emit();
             this.loadingService.hide();
-            console.log("Cena iniciada em "+(new Date().getTime()-start.getTime())/1000+" segundos");
+            console.log("Scene initialized in "+(new Date().getTime()-start.getTime())/1000+" seconds");
         }).onFail((error) => {
-            this.toastService.show("error","Erro ao carregar modelos",error.message);
+            this.toastService.show("error","Error loading models",error.message);
             this.loadingService.hide();
         });
         return this;
@@ -115,7 +114,7 @@ export default class Aplicacao {
     }
 
     getDimensions() {
-        const ratio = window.innerWidth / window.innerHeight; //Para alterar a proporção da aplicação, modificar esse valor
+        const ratio = window.innerWidth / window.innerHeight; // To change the application's aspect ratio, modify this value
         const width = ratio > 1 ? window.innerWidth : window.innerHeight * ratio;
         const height = ratio > 1 ? window.innerWidth / ratio : window.innerHeight;
         return {x: width, y: height, ratio:ratio};
@@ -132,13 +131,13 @@ export default class Aplicacao {
     loadAssets(){
         const gltfLoader = new GLTFLoader();
 
-        //Modelo base
+        // Base model
         const main = new Observable();
         const startMain = new Date();
         const assetsFolder = "./src/assets/";
         gltfLoader.load(assetsFolder + "main_sponza/NewSponza_Main_glTF_003.gltf",
             (gltf) => {
-                console.log("Modelo base carregado em "+(new Date().getTime()-startMain.getTime())/1000+" segundos");
+                console.log("Base model loaded in "+(new Date().getTime()-startMain.getTime())/1000+" seconds");
                 main.emit(gltf);
             },
             (xhr) => {
@@ -148,12 +147,12 @@ export default class Aplicacao {
             }
         )
 
-        //Modelo da estátua
+        // Statue model
         const statue = new Observable();
         const startStatue = new Date();
         gltfLoader.load(assetsFolder + "estatua/scene.gltf",
             (gltf) => {
-                console.log("Modelo da estátua carregado em "+(new Date().getTime()-startStatue.getTime())/1000+" segundos");
+                console.log("Statue model loaded in "+(new Date().getTime()-startStatue.getTime())/1000+" seconds");
                 statue.emit(gltf);
             },
             (xhr) => {
@@ -163,12 +162,12 @@ export default class Aplicacao {
             }
         )
 
-        //Modelo das cortinas
+        // Curtains model
         const curtains = new Observable();
         const startCurtains = new Date();
         gltfLoader.load(assetsFolder + "pkg_a_curtains/NewSponza_Curtains_glTF.gltf",
             (gltf) => {
-                console.log("Modelo das cortinas carregado em "+(new Date().getTime()-startCurtains.getTime())/1000+" segundos");
+                console.log("Curtains model loaded in "+(new Date().getTime()-startCurtains.getTime())/1000+" seconds");
                 curtains.emit(gltf);
             },
             (xhr) => {
@@ -178,7 +177,7 @@ export default class Aplicacao {
             }
         );
 
-        //Envmap
+        // Envmap
         const envmap = new Observable();
         const startEnvmap = new Date();
         const hdrLoader = new RGBELoader();
@@ -187,7 +186,7 @@ export default class Aplicacao {
                 texture.mapping = THREE.EquirectangularReflectionMapping;
                 const skybox = new GroundedSkybox(texture,50,40);
                 skybox.position.y = 25;
-                console.log("Envmap carregado em "+(new Date().getTime()-startEnvmap.getTime())/1000+" segundos");
+                console.log("Envmap loaded in "+(new Date().getTime()-startEnvmap.getTime())/1000+" seconds");
                 envmap.emit(skybox);
             },
             (error) => {
@@ -195,13 +194,13 @@ export default class Aplicacao {
             }
         );
 
-        //Water Normals
+        // Water Normals
         const waterNormals = new Observable();
         const startWater = new Date();
         const loader = new THREE.TextureLoader();
         loader.load(assetsFolder + "waternormals.jpg",
             (texture) => {
-                console.log("Water Normals carregado em "+(new Date().getTime()-startWater.getTime())/1000+" segundos");
+                console.log("Water Normals loaded in "+(new Date().getTime()-startWater.getTime())/1000+" seconds");
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                 texture.repeat.set(4,4);
                 waterNormals.emit(texture);
@@ -279,38 +278,38 @@ export default class Aplicacao {
             }
         });
         
-        //Configuração da GUI
-        const lightControls = this.gui.addFolder("Iluminação").close();
+        // GUI configuration
+        const lightControls = this.gui.addFolder("Lighting").close();
 
-        //Sun controls
-        const sunControls = lightControls.addFolder("Sol").close();
-        sunControls.add(this.sun,'visible').name("Ligado");
-        sunControls.addColor(this.sun,'color').name("Cor").onChange((value) => {
+        // Sun controls
+        const sunControls = lightControls.addFolder("Sun").close();
+        sunControls.add(this.sun,'visible').name("Enabled");
+        sunControls.addColor(this.sun,'color').name("Color").onChange((value) => {
             this.water.material.uniforms.sunColor.value.set(value);
         });
-        sunControls.add(this.sun,'intensity',0,10).name("Intensidade");
-        //Lantern controls
-        const lanterns = lightControls.addFolder("Luminárias").close();
-        lanterns.add(this.controls,'lightsVisible').name("Ligadas").onChange((value) => {
+        sunControls.add(this.sun,'intensity',0,10).name("Intensity");
+        // Lantern controls
+        const lanterns = lightControls.addFolder("Lanterns").close();
+        lanterns.add(this.controls,'lightsVisible').name("Enabled").onChange((value) => {
             this.lightObjs.forEach((light) => {
                 light.visible = value;
             }
         )});
-        lanterns.addColor(this.controls,'lightsColor').name("Cor").onChange((value) => {
+        lanterns.addColor(this.controls,'lightsColor').name("Color").onChange((value) => {
             this.lightObjs.forEach((light) => {
                 light.color.set(value);
             }
         )});
-        lanterns.add(this.controls,'lightsIntensity',0,10).name("Intensidade").onChange((value) => {
+        lanterns.add(this.controls,'lightsIntensity',0,10).name("Intensity").onChange((value) => {
             this.lightObjs.forEach((light) => {
                 light.intensity = value;
             }
         )});
-        //Ambient light controls
-        const ambientLightControls = lightControls.addFolder("Luz Ambiente").close();
-        ambientLightControls.add(ambientLight,'visible').name("Ligada");
-        ambientLightControls.addColor(ambientLight,'color').name("Cor");
-        ambientLightControls.add(ambientLight,'intensity',0,0.5).name("Intensidade");
+        // Ambient light controls
+        const ambientLightControls = lightControls.addFolder("Ambient Light").close();
+        ambientLightControls.add(ambientLight,'visible').name("Enabled");
+        ambientLightControls.addColor(ambientLight,'color').name("Color");
+        ambientLightControls.add(ambientLight,'intensity',0,0.5).name("Intensity");
         this.guiManager.addAlwaysOnItems(lightControls);
     }
 
@@ -324,28 +323,28 @@ export default class Aplicacao {
         this.statue.rotation.set(0,Math.PI/2,0);
         const baseScale = 0.42;
         this.statue.scale.set(baseScale,baseScale,baseScale);
-        this.statueControls = this.gui.addFolder("Estátua").close();
-        this.statueControls.add(this.statue.children[0],'visible').name("Visível");
+        this.statueControls = this.gui.addFolder("Statue").close();
+        this.statueControls.add(this.statue.children[0],'visible').name("Visible");
         this.mirrors = [];
         this.controls["mirrorVisible"] = true;
-        this.statueControls.add(this.controls,'mirrorVisible').name("Espelhos").onChange((value) => {   
+        this.statueControls.add(this.controls,'mirrorVisible').name("Mirrors").onChange((value) => {   
             this.mirrors.forEach((mirror) => {
                 mirror.visible = value;
             });
         });
-        this.statueControls.add(this.statue.position,'x',-10,10).name("Posição").onChange((value) => {
-            if(this.controls["SelectedCam"] === this.controls["POVs"]["Câmera de Segurança"]){
+        this.statueControls.add(this.statue.position,'x',-10,10).name("Position").onChange((value) => {
+            if(this.controls["SelectedCam"] === this.controls["POVs"]["Security Camera"]){
                 this.lookAtStatue();
             }
         });
-        this.statueControls.add(this.controls,'statueScale',0.15,0.6).name("Escala").onChange((value) => {
+        this.statueControls.add(this.controls,'statueScale',0.15,0.6).name("Scale").onChange((value) => {
             this.statue.scale.set(value,value,value);
-            if(this.controls["SelectedCam"] === this.controls["POVs"]["Câmera de Segurança"]){
+            if(this.controls["SelectedCam"] === this.controls["POVs"]["Security Camera"]){
                 this.lookAtStatue();
             }
         });
-        this.statueControls.add(this.controls,'Auto Rotate').name("Auto Rotacionar");
-        this.statueControls.add(this.controls,'Rotate Speed',0.1,5).name("Velocidade de Rotação");
+        this.statueControls.add(this.controls,'Auto Rotate').name("Auto Rotate");
+        this.statueControls.add(this.controls,'Rotate Speed',0.1,5).name("Rotation Speed");
         this.onRender.subscribe((delta) => {
             if(this.controls["Auto Rotate"]){
                 this.statue.children[0].rotation.z += this.controls["Rotate Speed"]*delta;
@@ -385,14 +384,14 @@ export default class Aplicacao {
         this.water.position.set(0.3,0.035,0.3)
         this.water.scale.set(0.84,0.45,0.84);
         this.scene.add(this.water);
-        const waterFolder = this.gui.addFolder("Água").close();
-        waterFolder.add(this.water,'visible').name("Ligada");
-        waterFolder.add(this.water.position,'y',0.035,1).name("Altura");
-        waterFolder.add(this.water.material.uniforms.size,'value',0.1,10).name("Escala");
-        waterFolder.add(this.water.material.uniforms.distortionScale,'value',0,10).name("Ondulação");
-        waterFolder.addColor(this.water.material.uniforms.waterColor,'value').name("Cor");
+        const waterFolder = this.gui.addFolder("Water").close();
+        waterFolder.add(this.water,'visible').name("Enabled");
+        waterFolder.add(this.water.position,'y',0.035,1).name("Height");
+        waterFolder.add(this.water.material.uniforms.size,'value',0.1,10).name("Scale");
+        waterFolder.add(this.water.material.uniforms.distortionScale,'value',0,10).name("Wave Distortion");
+        waterFolder.addColor(this.water.material.uniforms.waterColor,'value').name("Color");
         this.controls["Water Flow"] = 0.25;
-        waterFolder.add(this.controls,'Water Flow',0,1).name("Velocidade de Fluxo");
+        waterFolder.add(this.controls,'Water Flow',0,1).name("Flow Speed");
         this.onRender.subscribe((delta) => {
             this.water.material.uniforms.time.value += delta*this.controls["Water Flow"];
         });
@@ -427,19 +426,19 @@ export default class Aplicacao {
 
     configPOVs(){
         this.controls["POVs"] = {
-            "Entrada": {pos: [10.88,1.31,-0.08], dir: [-0.97,0.26,0.01]},
-            "Segundo Andar": {pos: [8.39,7.28,-1.71], dir: [-0.88,-0.38,0.27]},
-            "Vendo o Céu": {pos: [5.48,1.6,-0.52], dir: [-0.44,0.9,0.02]},
+            "Entrance": {pos: [10.88,1.31,-0.08], dir: [-0.97,0.26,0.01]},
+            "Second Floor": {pos: [8.39,7.28,-1.71], dir: [-0.88,-0.38,0.27]},
+            "Looking at Sky": {pos: [5.48,1.6,-0.52], dir: [-0.44,0.9,0.02]},
             "Top-Down": {pos: [0.11, 14.43, 0.29], dir:[0,-1,0]},
-            "Câmera de Segurança": {pos: [0.06,5.95,-1.47], dir: [-0.82,-0.53,0.23]}
+            "Security Camera": {pos: [0.06,5.95,-1.47], dir: [-0.82,-0.53,0.23]}
         };
-        this.controls["SelectedCam"] = this.controls["POVs"]["Entrada"];
+        this.controls["SelectedCam"] = this.controls["POVs"]["Entrance"];
     }
 
     onSelectCamera(cam){
         this.flyControlsGui.setValue(false);
         this.camera.position.set(...this.controls["SelectedCam"].pos);
-        if(cam === this.controls["POVs"]["Câmera de Segurança"]){
+        if(cam === this.controls["POVs"]["Security Camera"]){
             this.lookAtStatue();
         } else {
             this.setCamDirection(...this.controls["SelectedCam"].dir);

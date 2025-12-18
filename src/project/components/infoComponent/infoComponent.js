@@ -1,13 +1,13 @@
 import Component from '../../base/component.js';
 import { THREE } from '../../util/imports.js';
-// Importa o css do componente para o documento (utiliza o arquivo no mesmo diretório com o mesmo nome do arquivo js)
+// Imports the component's CSS into the document (uses the file in the same directory with the same name as the js file)
 const styleSheetUrl = import.meta.url.replace('.js', '.css');
 const styleSheet = new URL(styleSheetUrl).href;
 document.head.innerHTML += `<link rel="stylesheet" href="${styleSheet}">`;
 
 const fields = ['camPos','camRot'];
 export default class InfoComponent extends Component {
-    //Componente que exibe informações sobre a apicação
+    //Componente that exhibits information about the camera position and rotation
     init() {
         super.init();
         this.element.classList.add("info-component");

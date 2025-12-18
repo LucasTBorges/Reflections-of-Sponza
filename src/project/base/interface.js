@@ -5,9 +5,9 @@ export default class Interface {
         this.children = {};
     }
 
-    //Adiciona um filho ao objeto Interface
-    //name: string - nome do filho
-    //component: Component - componente filho
+    // Adds a child to the Interface object
+    // name: string - child name
+    // component: Component - child component
     addComponent(name, component){
         this.children[name] = component;
         component.name = name;
@@ -19,27 +19,27 @@ export default class Interface {
         return component;
     }
 
-    //Remove o filho passado como parâmetro do diciionário de filhos
+    // Removes the child passed as parameter from the children dictionary
     removeChild(name){
         this.children[name] = undefined;
     }
 
-    //Retorna o filho passado como parâmetro
+    // Returns the child passed as parameter
     getChild(name){
         return this.children[name];
     }
 
-    //Mostra o filho passado como parâmetro
+    // Shows the child passed as parameter
     showChild(name){
         this.children[name].show();
     }
 
-    //Esconde o filho passado como parâmetro
+    // Hides the child passed as parameter
     hideChild(name){
         this.children[name].hide();
     }
 
-    //Esconde todos os filhos exceto o que foi passado como parâmetro
+    // Hides all children except the one passed as parameter
     switchTo(name){
         for(let key in this.children){
             this.children[key].hide();
