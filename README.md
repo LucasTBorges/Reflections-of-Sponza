@@ -1,73 +1,178 @@
-﻿# Relatório Trabalho 2 - MATA65 (Computação Gráfica)
+# Project Report - MATA65 (Computer Graphics)
 
-<img src="./imgs/my_sponza.jpg" alt="Captura de Tela da Cena" width="1000"/>
+<img src="./imgs/my_sponza.jpg" alt="Scene Screenshot" width="100%"/>
 
-## Introdução
-Neste repositório se localiza o produto final do trabalho que marca a conclusão da unidade 2 da disciplina MATA65 - Computação Gráfica na UFBA no semestre 2024.2, ministrada pelo professor [Antônio Apolinário](https://computacao.ufba.br/pt-br/antonio-lopes-apolinario-junior), responsável pelas especificações do trabalho. Para executar a aplicação, é importante ter a pasta [Assets](https://github.com/LucasTBorges/Assets) na raíz do web server que está o executando.
-Nós fomos orientados a desenvolver uma aplicação utilizando a biblioteca [Three.js](https://threejs.org/) que nos permitisse visualizar o modelo do [Palácio de Sponza desenvolvido pela Intel](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html) iluminado corretamente e incluindo mais alguns itens de forma a demonstrar a capacidade do Three.js de simular certos fenômenos ópticos.
+## Introduction
+This repository contains the final project for the second unit of the **MATA65 - Computer Graphics** course at the Federal University of Bahia (UFBA), taught by Professor [Antônio Apolinário](https://computacao.ufba.br/pt-br/antonio-lopes-apolinario-junior) during the 2024.2 semester.
 
-**Observação:** os modelos desenvolvidos pela Intel possuem uma alta contagem de polígonos e texturas de alta resolução e portanto, além de exigirem uma alta quantidade de recursos do dispositivo que está executando a aplicação, podem causar um longo tempo de carregamento na inicialização. Em alguns casos a aplicação chegou a levar um minuto para carregar no meu computador, então a utilização do programa requer um pouco de paciência.
+We were tasked with developing a [Three.js](https://threejs.org/) application to visualize the [Sponza Palace model by Intel](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html). The goal was to implement physically plausible lighting and demonstrate Three.js's capability to simulate specific optical phenomena.
 
-## Assets
-Esta aplicação faz uso de alguns recursos não presentes originalmente na pasta Assets:
- - **Modelo Base do Palácio de Sponza:** [Disponível no site da Intel](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html), o arquivo GLTF deve estar localizado no caminho `/Assets/Models/glTF/Sponza-Intel/main1_sponza/`, junto com os arquivos dos quais ele depende.
- - **Modelo complementar das cortinas do Palácio de Sponza**: Também disponível no site da Intel, o arquivo GLTF e suas dependências devem se encontrar em `/Assets/Models/glTF/Sponza-Intel/pkg_a_curtains/`.
- - **Textura Normal da Água**: Mapa normal do material da água, já posicionado corretamente nesse repositório, em `/src/assets/`.
- - **Mapa de Ambiente**: Arquivo HDR contendo uma textura de ambiente utilizado no GroundedSkyBox da aplicação para apresentar um céu realista. Vem junto com as texturas do modelo base do palácio de Sponza, e deve estar localizado em `/Assets/Models/glTF/Sponza-Intel/main1_sponza/textures/`.
- - **Estátua:** Modelo 3d de uma estátua, publicado no [Sketchfab](https://sketchfab.com/3d-models/estatua-statue-907ae2bb4f23423db76b7ec9cfe6b0e9) pelo usuário [Huargenn](https://sketchfab.com/Huargenn). Já se encontra posicionado corretamente nesse repositório, em `/src/assets/estatua/`.
+> **⚠️ Note on Performance:** The Intel models feature high polygon counts and high-resolution textures. Consequently, the application requires significant system resources and may experience long loading times depending on your hardware.
 
-## Iluminação
-O modelo base do palácio de Sponza já possui embutido nele algumas fontes de luz. Ele possui uma fonte de luz direcional branca representando o sol e outras múltiplas fontes pontuais alaranjadas representando as luminárias. Além de importar a iluminação do modelo, tive que realizar algumas mudanças para deixar a cena mais realista:
+## How to Run
 
- - Configurei a intensidade das luzes para deixar o cenário mais agradável.
- - Modifiquei a direção da iluminação do sol para manter a consistência com a posição do sol na  imagem utilizada como textura para o céu.
- - Adicionei uma luz ambiente para simular a iluminação indireta.
- 
- A fim de tornar a aplicação mais interativa, adicionei a GUI controles para que usuário possa realizar ajustes à iluminação da cena.
+### 1. Clone the repository
+```bash
+git clone https://github.com/LucasTBorges/Reflections-of-Sponza.git
+cd Reflections-of-Sponza
+```
 
-## Sombras
-Ainda dentro do tópico de iluminação, o realismo da cena estava prejudicado por conta da falta de sombras. Portanto, eu habilitei sombras na cena e configurei todas as malhas de forma que elas projetassem e recebessem sombras. Entretanto, devido ao número de fontes de luz na cena, configurar todas elas para projetar sombras se mostrou inviável. Assim, optei por manter apenas o sol projetando sombras, o que já ocasionou uma diferença notável.
-Foi necessário ajustar o frustrum da câmera de sombras do sol para que este abrangesse todo o cenário, pois inicialmente apenas uma pequena região da cena estava sendo mapeada no mapa de sombras.
+### 2. Install Sponza Assets (Crucial Step)
+Because the Intel Sponza assets are large and proprietary, they are not included in this repository. You must download them manually:
 
-## Skybox
-Um dos requisitos do trabalho era que deveria ser possível ver o ceú quando o observador olhasse para cima enquanto posicionado no centro do átrio. Para atingir esse feito, adicionei um GroundedSkyBox à cena com a textura disponiblizada na própria pasta de texturas do modelo base do palácio.
+1.  Download `main_sponza.zip` and `pkg_a_curtains.zip` from the [Intel Graphics Research Samples page](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html).
+2.  Extract the contents of both zip files into the `/src/assets/` folder of this project.
+3.  **Cleanup (Optional):** You can safely delete the `.png` render previews and other formats (`.obj`, `.usd`), keeping only the `.gltf`, `.bin`, and the `textures` folder.
 
-## Disposição da Cena
-Fomos orientados a incluir, para além do modelo base do Palácio de Sponza, um dos modelos complementares disponibilizados pela Intel e optei por incluir o modelo que adiciona cortinas ao cenário. Para além disso, foi necessário incluir 2 outros modelos geométricos que permitissem a demonstração de efeitos do Three.js. Assim, incluí um par de espelhos e um plano de água. Também incluí uma estátua na cena, que fica girando em torno do próprio eixo e pode ter sua posição e tamanho controlada pelo usuário, e os espelhos acompanham as tranformações (exceto rotação) da estátua. O intuito da adição da estátua foi visualizar os reflexos reagindo a um objeto se movendo.
-Os objetos podem ser controlados pela interface: a água, espelhos e a estátua podem possuir a visibilidade desligados a comando do usuário, entre outros parâmetros.
+**Expected Folder Structure:**
+```
+Reflections-of-Sponza/
+└── src/
+    └── assets/
+        ├── main_sponza/      <-- Extracted from main_sponza.zip
+        │   ├── main_sponza.gltf
+        │   ├── main_sponza.bin
+        │   └── textures/
+        └── pkg_a_curtains/   <-- Extracted from pkg_a_curtains.zip
+            ├── ...
+```
 
-## Controles de Câmera
-As especificações do trabalho indicavam que deveria ser possível navegar livremente pelo cenário usando controles do Three.js, bem como navegar por pontos de vista fixos previamente definidos por mim. Através da GUI, o usuário pode habilitar o modo de Câmera Livre e utilizar os comandos do [FlyControls](https://threejs.org/docs/#examples/en/controls/FlyControls) do Three.js para passear na cena. Habilitei o parâmetro dragToLook, e portanto o usuário deve clicar e arrastar no canvas para alterar a direção da câmera.
-Também especifiquei alguns pontos fixos que o usuário pode escolher para ser transportado para um ponto de vista predefinido. Dentre esses pontos se encontra o rotulado como "Câmera de Segurança", que é o único cuja direção da câmera é dinâmica: se o usário modificar a posição do modelo da estátua com este ponto de vista selecionado e o modo de câmera livre estiver desablitado, a câmera acompanha o modelo da estátua.
-Selecionar um ponto de vista fixo desabilita o modo de Câmera Livre.
+*Note: The application handles missing curtains gracefully, but the base `main_sponza` files are required for startup.*
 
-## GUI (Interface Gráfica)
-A interface para os controles da aplicação foi gerada com a biblioteca [lil-gui](https://lil-gui.georgealways.com/).
+### 3. Start a local server
+Because of browser security restrictions (CORS) regarding loading local files, you cannot simply open `index.html`. You must run a local server:
 
-### Controles Básicos:
+* **VS Code (Recommended):** Install the "Live Server" extension and click "Go Live" on `index.html`.
+* **Python:**
+  
+    ```bash
+    # Python 3.x
+    python -m http.server
+    ```
+* **Node.js:**
+  
+  ```bash
+    npx http-server
+  ```
 
- - *Camera Info*: Quando habilitado, exibe um painel de informações no canto inferior direito da tela com as coordenadas da posição e a direção da câmera.
- - *Free Cam*: Quando habilitado, o usuário pode navegar livremente pelo cenário usando os FlyControls do Three.js.
- - *POVs*: Menu dropdown com pontos de vista predefinidos. Selecionar um ponto de vista transporta a câmera para o ponto de vista em questão e desabilita o Free Cam.
- 
-### Estátua:
- - *Visível*: Controla a visibilidade da estátua.
- - *Espelhos*: Controla a visibilidade dos espelhos.
- - *Posição*: Desloca a estátua e os espelhos através do eixo X pelo átrio do palácio. Se o Free Cam estiver desabilitado e o ponto de vista "Câmera Segurança" estiver selecionado, modificar esse parâmetro ocasio
- - *Escala*: Controla o tamanho da estátua e dos espelhos.
- - *Auto Rotacionar*: Quando habilitado, a estátua fica girando em torno do eixo Y local.
- - *Velocidade da Rotação*: Controla a velocidade da rotação em radianos por segundo.
+### 4. Open in Browser
+Navigate to `http://localhost:5500` (or the port specified by your server terminal).
 
-### Água:
- - *Ligada*: Controla a visibilidade da água.
- - *Altura*: Controla o nível da água (posição no eixo Y).
- - *Escala*: Controla a escala da textura do material.
- - *Ondulação*: Controla o nível de ondulação da água. Níveis maiores aumentam o efeito de distorção causado pela refração da água.
- - *Cor*: Controla a cor da água.
- - *Velocidade de Fluxo*: Controla a velocidade de deslocamento do offset da textura.
+---
 
-### Iluminação
- Há uma subpasta para cada fonte de luz (as luminárias são tratadas como um grupo para este fim), cada uma com três parâmetros que podem ser alterados:
- - *Ligado*: Controla a visibilidade da fonte de luz.
- - *Cor*: Controla a cor da fonte de luz.
- - *Intensidade*: Controla a intensidade da fonte de luz.
+## Assets Utilized
+
+### Repository Assets
+The following assets are included in this repo:
+* **Statue:** A 3D model published on Sketchfab by user [Huargenn](https://sketchfab.com/Huargenn). Available [here](https://sketchfab.com/3d-models/estatua-statue-907ae2bb4f23423db76b7ec9cfe6b0e9).
+* **Water Normal Map:** Standard normal texture from the [Three.js repository](https://github.com/mrdoob/three.js/blob/master/examples/textures/waternormals.jpg).
+
+### External Intel Assets
+Assets from the Sponza 2022 scene, commissioned by [Frank Meinl](https://www.artstation.com/digitalwerk) and sponsored by [Anton Kaplanyan](http://kaplanyan.com/). These must be downloaded separately:
+* **Sponza Palace Base Model:** Available on [Intel's Website](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html).
+* **Sponza Curtains:** Available on [Intel's Website](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html).
+* **Environment Map:** Bundled with the Sponza Palace Base Model textures.
+
+## Technical Features
+
+### Lighting
+The base model includes embedded light sources (a Directional "Sun" and Point "Lanterns"). To achieve photorealism, I enhanced the lighting logic:
+* **Calibration:** Adjusted light intensities for natural exposure.
+* **Alignment:** Matched the Sun's direction to the visual hot spot on the skybox texture.
+* **Global Illumination:** Added an Ambient Light to approximate indirect lighting.
+
+### Shadows
+To resolve the "floating object" look, shadow mapping was enabled.
+* **Optimization:** Shadows are cast exclusively by the Sun (Directional Light). Calculating shadows for the dozens of point lights (lanterns) was computationally prohibitive for WebGL.
+* **Frustum Tuning:** I manually adjusted the shadow camera's frustum to ensure it covers the entire atrium without clipping the architecture.
+
+### Skybox
+I implemented a `GroundedSkyBox` using the HDR texture provided with the Sponza assets to create a seamless horizon effect visible from the atrium.
+
+## Scene Layout & Optical Effects
+1.  **Water Plane:** Simulates reflection and refraction with wave distortion.
+2.  **Mirrors:** A pair of reflective surfaces demonstrating real-time planar reflections.
+3.  **Rotating Statue:** Placed in the center to demonstrate dynamic reflections. The mirrors track the statue's translation and scale but do not inherit its rotation.
+
+## Camera Controls
+The application supports two navigation modes:
+
+1.  **Free Cam:** Uses Three.js [FlyControls](https://threejs.org/docs/#examples/en/controls/FlyControls) for unrestricted 6DOF navigation.
+    * **Mouse:** Click and drag to look around (`dragToLook` enabled).
+    * **Keyboard:** `WASD` to move, `R/F` to move Up/Down, `Q/E` to Roll.
+2.  **Fixed POVs:** A list of pre-defined viewpoints (e.g., "Entrance", "Second Floor").
+    * *Security Camera Logic:* When active, this camera dynamically tracks the Statue's position if the user moves it.
+
+## GUI Controls
+The interface is built with [lil-gui](https://lil-gui.georgealways.com/).
+
+<details>
+  <summary><strong>Click to view GUI Screenshot</strong></summary>
+  <img src="imgs/gui.png" alt="GUI Controls" width="400" />
+</details>
+
+### Basic Controls
+
+ - **Camera Info**: Toggles the debug panel (bottom right) showing current position/direction vectors for the camera.
+
+ - **Free Cam**: Enables FlyControls navigation.
+
+ - **POVs**: Dropdown to teleport to specific viewpoints.
+
+
+
+### Statue
+
+ - **Visible / Mirrors**: Toggles visibility.
+
+ - **Position**: Moves the statue (and mirrors) along the X-axis of the atrium.
+
+ - **Scale**: Resizes the statue and mirrors.
+
+ - **Auto Rotate**: Toggles the local Y-axis rotation animation.
+
+ - **Rotation Speed**: Adjusts the angular velocity (rad/s).
+
+### Water
+
+ - **Enabled**: Toggles visibility.
+
+ - **Height**: Adjusts the water level (Y-axis).
+
+ - **Wave Distortion**: Controls the strength of the refraction/reflection distortion.
+
+ - **Flow Speed**: Controls the texture offset animation speed.
+
+### Lighting
+
+Controls are grouped by light source (Sun, Lanterns, Ambient).
+
+ - **Enabled**: Toggles specific lights.
+
+ - **Color / Intensity**: Real-time adjustment of light properties.
+
+## Customization: Adding POVs
+To add custom viewpoints, edit the `index.js` file at the root of the repository. Add a new entry to the `povs` object:
+
+```javascript
+
+import Aplicacao from "./src/project/base/aplicacao.js";
+
+const povs = {
+    "Entrance": {pos: [10.88,1.31,-0.08], dir: [-0.97,0.26,0.01]},
+    "Second Floor": {pos: [8.39,7.28,-1.71], dir: [-0.88,-0.38,0.27]},
+    "Looking at Sky": {pos: [5.48,1.6,-0.52], dir: [-0.44,0.9,0.02]},
+    "Top-Down": {pos: [0.11, 14.43, 0.29], dir:[0,-1,0]},
+    "Security Camera": {pos: [0.06,5.95,-1.47], dir: [-0.82,-0.53,0.23]}
+};
+
+new Aplicacao("Sponza Palace", povs).init();
+```
+
+**How to find coordinates:**
+<br>
+<img src="./imgs/info.png" alt="Camera info panel" width="38%"/>
+1.  Enable **Free Cam** and **Camera Info** in the GUI.
+2.  Fly to your desired location.
+3.  Note the **Position** and **Direction** values displayed in the bottom-right info panel.
+4.  Add these values to the `povs` object and restart the server.
