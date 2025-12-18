@@ -1,4 +1,4 @@
-:root{
+/* :root{
     --primary: #047daa;
     --secondary: #aabbcc;
     --grey: #f7f9fc;
@@ -33,7 +33,7 @@ li a.active{
 }
 .column.middle {
     flex: 4;
-}
+} */
 
 iframe {
     width: 100%;
@@ -44,6 +44,24 @@ body {
     margin: 0;
 }
 
-* {
-    font-family: "Poppins","Google Sans",Roboto,Arial,sans-serif;
+
+#app-footer {
+    position: absolute;
+    bottom: 15px;
+    left: 20px;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.8rem;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+#app-footer a {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+#app-footer a:hover {
+    color: #d4af37; /* Gold hover */
 }

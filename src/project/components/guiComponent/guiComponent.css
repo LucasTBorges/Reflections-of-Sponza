@@ -1,3 +1,28 @@
 .lil-gui.autoPlace{
     z-index: 1;
 }
+
+.lil-gui { 
+    --background-color: #1a1a1a;
+    --text-color: #e5e5e5;
+    --title-background-color: #2c2c2c;
+    --title-text-color: #d4af37;
+    --widget-color: #444;
+    --hover-color: #555;
+    --focus-color: #d4af37;
+    --number-color: #2cc9ff;
+    --string-color: #a2ff00;
+    font-family: 'Lato', sans-serif !important;
+}
+
+.lil-gui.autoPlace {
+    top: 20px;
+    right: 20px;
+}
+
+.lil-gui .title {
+    height: 30px;
+    line-height: 30px;
+    font-weight: 600;
+    border-left: 3px solid #d4af37;
+}

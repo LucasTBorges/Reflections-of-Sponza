@@ -1,10 +1,15 @@
 .info-component {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.562);
-  padding: 8px;
-  color: white;
-  display: flex;
-  flex-direction: column;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #d4af37; /* Gold text */
+    font-family: 'Consolas', 'Monaco', monospace; /* Tech feel for debug */
+    font-size: 0.75rem;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    pointer-events: none;
+    text-align: right;
+    line-height: 1.4;
 }

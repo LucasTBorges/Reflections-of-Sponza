@@ -8,11 +8,9 @@ export default class LoadingComponent extends Component {
     //Componente que exibe um spinner de carregamento
     getHTML() {
         return `
-            <div class="loading-overlay">
-                <div class="spinner" role="status">
-                </div>
-                <h2>Carregando...</h2>
-            </div>
+        <div class="loading-overlay" id="loading-screen"> <div class="spinner"></div>
+            <h2>Sponza Palace</h2>
+        </div>
         `;
     }
 }
