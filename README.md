@@ -1,15 +1,15 @@
-# Project Report - MATA65 (Computer Graphics)
+# Reflections of Sponza
 
 <img src="./imgs/my_sponza.jpg" alt="Scene Screenshot" width="100%"/>
 
 ## Introduction
-This repository contains the final project for the second unit of the **MATA65 - Computer Graphics** course at the Federal University of Bahia (UFBA), taught by Professor [Antônio Apolinário](https://computacao.ufba.br/pt-br/antonio-lopes-apolinario-junior) during the 2024.2 semester.
+This repository contains the final project for the second unit of the MATA65 - Computer Graphics course at the Federal University of Bahia (UFBA), taught by Professor [Antônio Apolinário](https://computacao.ufba.br/pt-br/antonio-lopes-apolinario-junior) during the 2024.2 semester.
 
 We were tasked with developing a [Three.js](https://threejs.org/) application to visualize the [Sponza Palace model by Intel](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html). The goal was to implement physically plausible lighting and demonstrate Three.js's capability to simulate specific optical phenomena.
 
-> **⚠️ Note on Performance:** The Intel models feature high polygon counts and high-resolution textures. Consequently, the application requires significant system resources and may experience long loading times depending on your hardware.
-
 ## How to Run
+
+> **⚠️ Note on Performance:** The Intel models feature high polygon counts and high-resolution textures. Consequently, the application requires significant system resources and may experience long loading times depending on your hardware.
 
 ### 1. Clone the repository
 ```bash
@@ -118,8 +118,6 @@ The interface is built with [lil-gui](https://lil-gui.georgealways.com/).
  - **Free Cam**: Enables FlyControls navigation.
 
  - **POVs**: Dropdown to teleport to specific viewpoints.
-
-
 
 ### Statue
 
