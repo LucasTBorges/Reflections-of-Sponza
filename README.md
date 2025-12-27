@@ -22,7 +22,7 @@ Because the Intel Sponza assets are considerably large, they are not included in
 
 1.  Download `main_sponza.zip` and `pkg_a_curtains.zip` from the [Intel Graphics Research Samples page](https://www.intel.com/content/www/us/en/developer/topic-technology/graphics-research/samples.html).
 2.  Extract the contents of both zip files into the `/src/assets/` folder of this project.
-3.  **Cleanup (Optional):** You can safely delete the `.png` render previews and other formats (`.obj`, `.usd`), keeping only the `.gltf`, `.bin`, and the `textures` folder.
+3.  **Cleanup (Optional):** You can safely delete the `.png` render previews and other formats (`.max`, `.usda`,`.fbx`), keeping only the `.gltf`, `.bin`, and the `textures` folder.
 
 **Expected Folder Structure:**
 ```
